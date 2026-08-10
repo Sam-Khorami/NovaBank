@@ -7,7 +7,7 @@ export class Ip {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({ type: "varchar", nullable: false })
+    @Column({ type: "varchar", nullable: false, unique: true })
     ip!: string;
 
     @Column({ type: "int", nullable: false, default: 0 })
