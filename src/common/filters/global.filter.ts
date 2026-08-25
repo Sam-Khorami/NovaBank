@@ -38,7 +38,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         }
 
         if (statusCode >= 500) this.logger.error(message, exception instanceof Error? exception.stack: undefined, 'GlobalExceptionFilter');
-        else this.logger.warn(`${request.method} ${request.url} -> ${status}`,'GlobalExceptionFilter');
+        else this.logger.warn(`${request.method} ${request.url} -> ${statusCode}`,'GlobalExceptionFilter');
 
         response.status(statusCode).json({
             success: false,
