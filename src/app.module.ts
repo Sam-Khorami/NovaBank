@@ -7,6 +7,7 @@ import { databaseConfig } from './config/database.config';
 import { IpModule } from './modules/ip/ip.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { IpTrackerMiddleware } from './common/middlewares/ipTracker.middleware';
+import { LoggerModule } from './common/logger/logger.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { IpTrackerMiddleware } from './common/middlewares/ipTracker.middleware';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync(databaseConfig),
     IpModule,
-    AuthModule
+    AuthModule,
+    LoggerModule
 
 
   ],
