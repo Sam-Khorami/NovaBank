@@ -4,9 +4,9 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './config/database.config';
-import { IpModule } from './ip/ip.module';
 import { IpTrackerMiddleware } from './middlewares/ipTracker.middleware';
-import { AuthModule } from './auth/auth.module';
+import { IpModule } from './modules/ip/ip.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
