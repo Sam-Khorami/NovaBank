@@ -2,12 +2,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ResponseFormaterInterceptor } from './common/interceptors/response-formater.interceptor';
+import { GlobalExceptionFilter } from './common/filters/global.filter';
 
 async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalInterceptors(new ResponseFormaterInterceptor);
+  app.useGlobalFilters(new GlobalExceptionFilter);
 
   const config = new DocumentBuilder()
   .setTitle("Dental Hub")
