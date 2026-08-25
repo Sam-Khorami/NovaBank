@@ -3,13 +3,15 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ResponseFormaterInterceptor } from './common/interceptors/response-formater.interceptor';
 import { GlobalExceptionFilter } from './common/filters/global.filter';
+import { AppLogger } from './common/logger/logger.service';
 
 async function bootstrap() {
 
   const app = await NestFactory.create(AppModule);
+  const logger = app.get(AppLogger);
 
   app.useGlobalInterceptors(new ResponseFormaterInterceptor);
-  app.useGlobalFilters(new GlobalExceptionFilter);
+  app.useGlobalFilters(new GlobalExceptionFilter(logger));
 
   const config = new DocumentBuilder()
   .setTitle("Dental Hub")
