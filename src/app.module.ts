@@ -6,13 +6,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { databaseConfig } from './config/database.config';
 import { IpModule } from './ip/ip.module';
 import { IpTrackerMiddleware } from './middlewares/ipTracker.middleware';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
 
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync(databaseConfig),
-    IpModule
+    IpModule,
+    AuthModule
 
 
   ],
