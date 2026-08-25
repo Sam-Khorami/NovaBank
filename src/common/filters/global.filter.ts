@@ -1,60 +1,53 @@
-import {
-  ArgumentsHost,
-  Catch,
-  ExceptionFilter,
-  HttpException,
-  HttpStatus,
-  Logger,
-} from '@nestjs/common';
-import { Request, Response } from 'express';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from "@nestjs/common";
+import { AppLogger } from "../logger/logger.service";
+import { Request, Response } from "express";
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
+  
+    constructor (
+  
+        private readonly logger: AppLogger
+  
+    ) {}
 
-    private readonly logger = new Logger(GlobalExceptionFilter.name);
-
-    catch(exception: unknown, host: ArgumentsHost): void {
+    catch(exception: unknown, host: ArgumentsHost) {
 
         const context = host.switchToHttp();
 
-        const request = context.getRequest<Request>();
         const response = context.getResponse<Response>();
+        const request = context.getRequest<Request>();
 
-        let status = HttpStatus.INTERNAL_SERVER_ERROR;
+        let statusCode = 500;
         let message = 'خطای داخلی سرور';
-        let error: string | undefined;
 
         if (exception instanceof HttpException) {
 
-            status = exception.getStatus();
+            statusCode = exception.getStatus();
             const exceptionResponse = exception.getResponse();
 
             if (typeof exceptionResponse === 'string') message = exceptionResponse;
-        
             else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
 
-                const body = exceptionResponse as { message: string; error?: string };
+                const body = exceptionResponse as { message?: string };
 
                 message = body.message ?? message;
-                error = body.error;
 
             }
 
-        } 
-        
-        else this.logger.error(exception instanceof Error? exception.stack: String(exception));
+        }
 
-        const responseBody = {
+        if (statusCode >= 500) this.logger.error(message, exception instanceof Error? exception.stack: undefined, 'GlobalExceptionFilter');
+        else this.logger.warn(`${request.method} ${request.url} -> ${status}`,'GlobalExceptionFilter');
+
+        response.status(statusCode).json({
             success: false,
-            statusCode: status,
+            statusCode: statusCode,
             message,
-            error,
             timestamp: new Date().toISOString(),
             path: request.url,
-            method: request.method,
-        };
+        });
 
-        response.status(status).json(responseBody);
     }
 
 }
