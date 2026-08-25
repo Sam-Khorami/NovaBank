@@ -1,20 +1,30 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "target": "ES2023",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "rootDir": "./src",
+    "resolvePackageJsonExports": true,
     "esModuleInterop": true,
+    "isolatedModules": true,
+    "declaration": true,
+    "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "rootDir": "./src",
+    "target": "ES2023",
+    "sourceMap": true,
     "outDir": "./dist",
+    "ignoreDeprecations": "5.0",
+    "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": true,
+    "strictNullChecks": false,
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "src/*": ["./src/*"],
+      "*": ["./*"]
+    }
+  }
 }
