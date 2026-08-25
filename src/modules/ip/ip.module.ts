@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { IpService } from './ip.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Ip } from '../entity/ip.entity';
+import { Ip } from 'src/entity/ip.entity';
+
 
 @Module({
   imports: [
