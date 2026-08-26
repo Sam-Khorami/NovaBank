@@ -1,6 +1,7 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import bcrypt from "bcrypt";
 import { UserRoleEnum } from "src/common/types/entities.enum";
+import { Wallet } from "./wallet.entity";
 
 
 @Entity("users")
@@ -26,6 +27,15 @@ export class User {
 
     @Column({ type: "enum", enum: UserRoleEnum, nullable: false, default: UserRoleEnum.USER })
     role: UserRoleEnum;
+
+    @CreateDateColumn()
+    createdAt: Date;
+
+    @UpdateDateColumn()
+    updatedAt: Date;
+
+    @OneToOne(() => Wallet, (wallet) => wallet.user)
+    wallet: Wallet;
 
     @BeforeInsert()
     async hashPassword () {
