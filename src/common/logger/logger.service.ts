@@ -21,7 +21,8 @@ export class AppLogger implements LoggerService {
 
     private write(level: string, message: unknown, context?: string) {
 
-        const timestamp = new Date().toISOString();
+        const startTime = new Date();
+        const timestamp = `${startTime.getFullYear()}-${startTime.getMonth()}-${startTime.getDate()} ${startTime.getHours()}:${startTime.getMinutes()}:${startTime.getSeconds()}`;
 
         const log = { timestamp, level, context: context ?? null, message };
 
