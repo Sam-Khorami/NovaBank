@@ -1,5 +1,6 @@
 import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 import bcrypt from "bcrypt";
+import { UserRoleEnum } from "src/common/types/entities.enum";
 
 
 @Entity("users")
@@ -22,6 +23,9 @@ export class User {
 
     @Column({ type: "varchar", nullable: true })
     lastName: string;
+
+    @Column({ type: "enum", enum: UserRoleEnum, nullable: false, default: UserRoleEnum.USER })
+    role: UserRoleEnum;
 
     @BeforeInsert()
     async hashPassword () {
