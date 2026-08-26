@@ -9,3 +9,19 @@ export enum WalletStatusEnum {
     Closed = "closed",
     Blocked = "blocked"
 }
+
+export enum TransactionStatusEnum { 
+    PENDING = "pending", 
+    SUCCESS = "success", 
+    FAILED = "failed", 
+    CANCELED = "canceled" 
+}
+
+export enum TransactionTypeEnum { 
+    DEPOSIT = "deposit", 
+    WITHDRAW = "withdraw", 
+    PURCHASE = "purchase", 
+    REFUND = "refund", 
+    ADMINDEPOSIT = "adminDeposit", 
+    ADMINWITHDRAW = "adminWithdraw" 
+}
