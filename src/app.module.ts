@@ -8,6 +8,7 @@ import { IpModule } from './modules/ip/ip.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { IpTrackerMiddleware } from './common/middlewares/ipTracker.middleware';
 import { LoggerModule } from './common/logger/logger.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { LoggerModule } from './common/logger/logger.module';
     TypeOrmModule.forRootAsync(databaseConfig),
     IpModule,
     AuthModule,
-    LoggerModule
+    LoggerModule,
+    MailModule
 
 
   ],
