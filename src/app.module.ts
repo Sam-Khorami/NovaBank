@@ -11,6 +11,7 @@ import { LoggerModule } from './common/logger/logger.module';
 import { MailModule } from './modules/mail/mail.module';
 import { VitalRecordsModule } from './modules/vital-records/vital-records.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { RedisModule } from './modules/redis/redis.module';
 import KeyvRedis from '@keyv/redis';
 
 @Module({
@@ -33,8 +34,8 @@ import KeyvRedis from '@keyv/redis';
     AuthModule,
     LoggerModule,
     MailModule,
-    VitalRecordsModule
-
+    VitalRecordsModule,
+    RedisModule
 
   ],
   controllers: [AppController],
