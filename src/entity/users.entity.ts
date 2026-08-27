@@ -11,13 +11,13 @@ export class User {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column({ type: "varchar", nullable: false })
+    @Column({ type: "varchar", nullable: false, unique: true })
     phoneNumber: string;
 
     @Column({ type: "varchar", nullable: false })
     email: string;
 
-    @Column({ type: "varchar", nullable: false })
+    @Column({ type: "varchar", nullable: false, unique: true })
     nationalCode: string;
 
     @Column({ type: "varchar", nullable: false })
