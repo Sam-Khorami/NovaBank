@@ -5,11 +5,16 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entity/users.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { VitalRecordsModule } from '../vital-records/vital-records.module';
+import { Wallet } from 'src/entity/wallet.entity';
+import { WalletTransaction } from 'src/entity/walletTransaction.entity';
+import { MailModule } from '../mail/mail.module';
+import { RedisModule } from '../redis/redis.module';
 
 @Module({
   imports: [
 
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, Wallet, WalletTransaction]),
     JwtModule.registerAsync({
 
       imports: [ConfigModule],
@@ -21,7 +26,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
       })
 
-    })
+    }),
+    VitalRecordsModule,
+    MailModule,
+    RedisModule
 
   ],
   controllers: [AuthController],
