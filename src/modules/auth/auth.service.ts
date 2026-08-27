@@ -47,6 +47,19 @@ export class AuthService {
 
     }
 
+    async logout (request: Request) {
+
+        const userId = request["user"].id;
+        const user = await this.userRepo.findOne({ where: { id: userId } });
+        if (!user) throw new NotFoundException("User NotFound");
+
+        user.userVerification = UserVerificationEnum.UNVERIFIED;
+        await this.userRepo.save(user);
+
+        return { message: "You are logged out now" }
+
+    }
+
     async otpVerification (data: OtpVerificationDto, response: Response) {
 
         const user = await this.userRepo.findOne({ where: { phoneNumber: data.phoneNumber } });
