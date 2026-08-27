@@ -22,7 +22,7 @@ export class JwtAuthGuard implements CanActivate {
 
         const token = request.headers.authorization ?? request.cookies?.access_token;
         if (!token) throw new UnauthorizedException("User is unauthorized");
-        const mainToken = token.spilit(" ")[1];
+        const mainToken = token.split(" ")[1];
 
         let payload: Payload;
 
