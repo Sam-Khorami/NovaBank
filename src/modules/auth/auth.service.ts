@@ -31,7 +31,7 @@ export class AuthService {
         const checkUser = await this.userRepo.findOne({ where: { phoneNumber: data.phoneNumber } });
         if (checkUser) throw new ConflictException("User already signed up");
 
-        // await this.vitalRecordsService.isMatch(data.phoneNumber, data.nationalCode);
+        await this.vitalRecordsService.isMatch(data.phoneNumber, data.nationalCode);
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
         const newUnverifiedUser = this.userRepo.create({ phoneNumber: data.phoneNumber, email: data.email, nationalCode: data.nationalCode, password: data.password });
