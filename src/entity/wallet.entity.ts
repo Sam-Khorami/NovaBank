@@ -10,7 +10,7 @@ export class Wallet {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column({ type: 'numeric', precision: 20, scale: 8, nullable: false })
+    @Column({ type: 'numeric', precision: 20, scale: 8, nullable: false, default: 0 })
     balance: number
 
     @Column({ type: "enum", enum: WalletStatusEnum, default: WalletStatusEnum.Active, nullable: false })
