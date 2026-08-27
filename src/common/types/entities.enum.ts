@@ -25,3 +25,8 @@ export enum TransactionTypeEnum {
     ADMINDEPOSIT = "adminDeposit", 
     ADMINWITHDRAW = "adminWithdraw" 
 }
+
+export enum UserVerificationEnum {
+    VERIFIED = "verified",
+    UNVERIFIED = "unverified"
+}
