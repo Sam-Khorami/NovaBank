@@ -23,6 +23,7 @@ import KeyvRedis from '@keyv/redis';
 
       imports: [ConfigModule],
       inject: [ConfigService],
+      isGlobal: true,
       useFactory: async (configService: ConfigService) => ({
 
         stores: [ new KeyvRedis(`redis://${configService.get("REDIS_HOST")}:${configService.get("REDIS_PORT")}`) ]
