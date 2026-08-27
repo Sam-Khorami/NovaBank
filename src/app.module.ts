@@ -8,7 +8,8 @@ import { IpModule } from './modules/ip/ip.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { IpTrackerMiddleware } from './common/middlewares/ipTracker.middleware';
 import { LoggerModule } from './common/logger/logger.module';
-import { MailModule } from './mail/mail.module';
+import { MailModule } from './modules/mail/mail.module';
+import { VitalRecordsModule } from './modules/vital-records/vital-records.module';
 
 @Module({
   imports: [
@@ -18,7 +19,8 @@ import { MailModule } from './mail/mail.module';
     IpModule,
     AuthModule,
     LoggerModule,
-    MailModule
+    MailModule,
+    VitalRecordsModule
 
 
   ],
