@@ -1,6 +1,6 @@
 import { BeforeInsert, Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import bcrypt from "bcrypt";
-import { UserRoleEnum } from "src/common/types/entities.enum";
+import { UserRoleEnum, UserVerificationEnum } from "src/common/types/entities.enum";
 import { Wallet } from "./wallet.entity";
 import { WalletTransaction } from "./walletTransaction.entity";
 
@@ -31,6 +31,12 @@ export class User {
 
     @Column({ type: "enum", enum: UserRoleEnum, nullable: false, default: UserRoleEnum.USER })
     role: UserRoleEnum;
+
+    @Column({ type: "enum", enum: UserVerificationEnum, nullable: false, default: UserVerificationEnum.UNVERIFIED })
+    userVerification: UserVerificationEnum;
+
+    @Column({ type: "enum", enum: UserVerificationEnum, nullable: false, default: UserVerificationEnum.UNVERIFIED })
+    emailVerification: UserVerificationEnum;
 
     @CreateDateColumn()
     createdAt: Date;
