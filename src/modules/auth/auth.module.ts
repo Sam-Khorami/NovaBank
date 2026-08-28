@@ -19,6 +19,7 @@ import { Permission } from 'src/entity/permission.entity';
     TypeOrmModule.forFeature([User, Wallet, WalletTransaction, Role, Permission]),
     JwtModule.registerAsync({
 
+      global: true,
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
