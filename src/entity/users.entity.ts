@@ -1,8 +1,10 @@
-import { BeforeInsert, Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import bcrypt from "bcrypt";
 import { UserRoleEnum, UserVerificationEnum } from "src/common/types/entities.enum";
 import { Wallet } from "./wallet.entity";
 import { WalletTransaction } from "./walletTransaction.entity";
+import { Role } from "./role.entity";
+import { Permission } from "./permission.entity";
 
 
 @Entity("users")
@@ -46,6 +48,14 @@ export class User {
 
     @OneToOne(() => Wallet, (wallet) => wallet.user)
     wallet: Wallet;
+
+    @ManyToMany(() => Role, (roles) => roles)
+    @JoinTable({ name: "user_role" })
+    roles: Role[];
+
+    @ManyToMany(() => Permission, (permissions) => permissions)
+    @JoinTable({ name: "user_permission" })
+    permissions: Permission[];
 
     @OneToMany(() => WalletTransaction, (walletTransactions) => walletTransactions.user)
     walletTransactions: WalletTransaction[];
