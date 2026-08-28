@@ -13,6 +13,7 @@ import { VitalRecordsModule } from './modules/vital-records/vital-records.module
 import { CacheModule } from '@nestjs/cache-manager';
 import { RedisModule } from './modules/redis/redis.module';
 import KeyvRedis from '@keyv/redis';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -36,7 +37,8 @@ import KeyvRedis from '@keyv/redis';
     LoggerModule,
     MailModule,
     VitalRecordsModule,
-    RedisModule
+    RedisModule,
+    AdminModule
 
   ],
   controllers: [AppController],
