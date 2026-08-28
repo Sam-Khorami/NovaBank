@@ -68,7 +68,7 @@ export class AuthService {
 
         const user = await this.userRepo.findOne({ where: { phoneNumber: data.phoneNumber } });
         if (!user) throw new NotFoundException("The user with this information not found!");
-        if (user.emailVerification === UserVerificationEnum.UNVERIFIED) throw new BadRequestException("You need to sign up");
+        if (user.emailVerification === UserVerificationEnum.UNVERIFIED) throw new BadRequestException("Please verify your email first");
 
         const isMatch = await bcrypt.compare(data.password, user.password);
         if (!isMatch) throw new NotFoundException("The user with this information not found!");
@@ -81,15 +81,16 @@ export class AuthService {
 
     }
 
-    async logout (request: Request) {
+    async logout (response: Response) {
 
-        const userId = request["user"].id;
-        const user = await this.userRepo.findOne({ where: { id: userId } });
-        if (!user) throw new NotFoundException("User NotFound");
-        if (user.userVerification === UserVerificationEnum.UNVERIFIED) throw new BadRequestException("You are logout already");
+        response.clearCookie("access_token", {
 
-        user.userVerification = UserVerificationEnum.UNVERIFIED;
-        await this.userRepo.save(user);
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            path: "/"
+
+        })
 
         return { message: "You are logged out now" }
 
@@ -99,7 +100,6 @@ export class AuthService {
 
         const user = await this.userRepo.findOne({ where: { phoneNumber: data.phoneNumber } });
         if (!user) throw new NotFoundException("User Not Found");
-        if (user.emailVerification === UserVerificationEnum.VERIFIED && user.userVerification === UserVerificationEnum.VERIFIED) throw new BadRequestException("User already logged in");
 
         const getOtp = await this.redisService.get(`otp:${data.phoneNumber}`);
         if (!getOtp) throw new BadRequestException("The otp expired or not found!");

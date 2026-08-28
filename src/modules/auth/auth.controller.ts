@@ -35,9 +35,9 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Post("logout")
-  async logout (@Req() request: Request) {
+  async logout (@Res({ passthrough: true }) response: Response) {
 
-    return await this.authService.logout(request);
+    return await this.authService.logout(response);
 
   }
 
