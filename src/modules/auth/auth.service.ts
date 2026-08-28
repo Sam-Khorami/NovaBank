@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/users.entity';
 import { Repository } from 'typeorm';
@@ -15,6 +15,7 @@ import { ChangePasswordDto } from './dto/changePassword.dto';
 import bcrypt from "bcrypt";
 import { Role } from 'src/entity/role.entity';
 import { Permission } from 'src/entity/permission.entity';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -63,6 +64,23 @@ export class AuthService {
 
     }
 
+    async login (data: LoginDto) {
+
+        const user = await this.userRepo.findOne({ where: { phoneNumber: data.phoneNumber } });
+        if (!user) throw new NotFoundException("The user with this information not found!");
+        if (user.emailVerification === UserVerificationEnum.UNVERIFIED) throw new BadRequestException("You need to sign up");
+
+        const isMatch = await bcrypt.compare(data.password, user.password);
+        if (!isMatch) throw new NotFoundException("The user with this information not found!");
+
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        await this.redisService.setOtp(`otp:${data.phoneNumber}`, otpCode, 120000);
+        await this.mailService.sendOtp(user.email, otpCode);
+
+        return { message: "The otp code sent to your email" }
+
+    }
+
     async logout (request: Request) {
 
         const userId = request["user"].id;
@@ -95,7 +113,7 @@ export class AuthService {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
-            maxAge: 30 * 24 * 60 * 60 * 1000      ,
+            maxAge: 30 * 24 * 60 * 60 * 1000,
             path: "/"      
 
         })

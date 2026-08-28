@@ -6,6 +6,7 @@ import { OtpVerificationDto } from './dto/otpVerification.dto';
 import type { Response } from 'express';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { ChangePasswordDto } from './dto/changePassword.dto';
+import { LoginDto } from './dto/login.dto';
 
 @ApiTags("Auth Management")
 @Controller('auth')
@@ -19,6 +20,14 @@ export class AuthController {
   async signUp (@Body() data: SignUpDto) {
 
     return await this.authService.signUp(data);
+
+  }
+
+  @ApiOperation({ summary: "Login", description: "With this api you can login" })
+  @Post("login")
+  async login (@Body() data: LoginDto) {
+
+    return await this.authService.login(data);
 
   }
 
