@@ -16,6 +16,8 @@ import bcrypt from "bcrypt";
 import { Role } from 'src/entity/role.entity';
 import { Permission } from 'src/entity/permission.entity';
 import { LoginDto } from './dto/login.dto';
+import { ForgetPasswordDto } from './dto/forgetPassword.dto';
+import { VerifyChangePasswordDto } from './dto/verifyChangePassword.dto';
 
 @Injectable()
 export class AuthService {
@@ -57,7 +59,7 @@ export class AuthService {
         const newWallet = this.walletRepo.create({ user: newUnverifiedUser });
         await this.walletRepo.save(newWallet);
         
-        await this.redisService.setOtp(`otp:${data.phoneNumber}`, otpCode, 120000)
+        await this.redisService.setOtp(`otp:for:login:${data.phoneNumber}`, otpCode, 120000)
         await this.mailService.sendOtp(data.email, otpCode);
 
         return { message: "The otp Code is sent to you" }
@@ -74,7 +76,7 @@ export class AuthService {
         if (!isMatch) throw new NotFoundException("The user with this information not found!");
 
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-        await this.redisService.setOtp(`otp:${data.phoneNumber}`, otpCode, 120000);
+        await this.redisService.setOtp(`otp:for:login:${data.phoneNumber}`, otpCode, 120000);
         await this.mailService.sendOtp(user.email, otpCode);
 
         return { message: "The otp code sent to your email" }
@@ -101,7 +103,7 @@ export class AuthService {
         const user = await this.userRepo.findOne({ where: { phoneNumber: data.phoneNumber } });
         if (!user) throw new NotFoundException("User Not Found");
 
-        const getOtp = await this.redisService.get(`otp:${data.phoneNumber}`);
+        const getOtp = await this.redisService.get(`otp:for:login:${data.phoneNumber}`);
         if (!getOtp) throw new BadRequestException("The otp expired or not found!");
         if (getOtp !== data.otp) throw new BadRequestException("Wrong otp entered");
         
@@ -135,6 +137,35 @@ export class AuthService {
         const newHashedPassword = await bcrypt.hash(data.newPassword, 12);
         await this.userRepo.update({ id: userId }, { password: newHashedPassword });
         return { message: "Your password changed successfully!" }
+
+    }
+
+    async forgetPassword (data: ForgetPasswordDto) {
+
+        const user = await this.userRepo.findOne({ where: { phoneNumber: data.phoneNumber } });
+        if (!user) throw new NotFoundException("User Not Found!");
+        if (user.emailVerification === UserVerificationEnum.UNVERIFIED) throw new BadRequestException("Please verify your email first");
+
+        const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+        await this.redisService.setOtp(`otp:${data.phoneNumber}`, otpCode, 120000);
+        await this.mailService.sendOtp(user.email, otpCode);
+
+        return { message: "The otp code sent to your email successfully" }
+
+    }
+
+    async verifyOtpForChangePassword (data: VerifyChangePasswordDto) {
+
+        const user = await this.userRepo.findOne({ where: { phoneNumber: data.phoneNumber } });
+        if (!user) throw new NotFoundException("User Not Found!");
+         
+        const getOtp = await this.redisService.get(`otp:${data.phoneNumber}`);
+        if (!getOtp) throw new BadRequestException("The otp expired or not found!");
+        if (getOtp !== data.otp) throw new BadRequestException("Wrong otp entered");
+
+        const hashedPassword = await bcrypt.hash(data.newPassword, 12);
+        await this.userRepo.update({ phoneNumber: data.phoneNumber }, { password: hashedPassword });
+        return { message: "Your new password set successfully!" }
 
     }
 

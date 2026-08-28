@@ -7,6 +7,8 @@ import type { Response } from 'express';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import { LoginDto } from './dto/login.dto';
+import { ForgetPasswordDto } from './dto/forgetPassword.dto';
+import { VerifyChangePasswordDto } from './dto/verifyChangePassword.dto';
 
 @ApiTags("Auth Management")
 @Controller('auth')
@@ -56,6 +58,22 @@ export class AuthController {
   async changePassword (@Body() data: ChangePasswordDto, @Req() request: Request) {
 
     return await this.authService.changePassword(data, request);
+
+  }
+
+  @ApiOperation({ summary: "Forget Password", description: "With this api you can set a new password in case you forget your password" })
+  @Post("forget-password")
+  async forgetPassword (@Body() data: ForgetPasswordDto) {
+
+    return await this.authService.forgetPassword(data);
+
+  }
+
+  @ApiOperation({ summary: "Verify Otp For Forget Password", description: "With this api you can enter the otp code that sent to your email and set your new password" })
+  @Post("verify-otp-for-forget-password")
+  async verifyOtpForChangePassword (@Body() data: VerifyChangePasswordDto) {
+
+    return await this.authService.verifyOtpForChangePassword(data);
 
   }
 
