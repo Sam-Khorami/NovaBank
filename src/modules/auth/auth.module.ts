@@ -10,11 +10,13 @@ import { Wallet } from 'src/entity/wallet.entity';
 import { WalletTransaction } from 'src/entity/walletTransaction.entity';
 import { MailModule } from '../mail/mail.module';
 import { RedisModule } from '../redis/redis.module';
+import { Role } from 'src/entity/role.entity';
+import { Permission } from 'src/entity/permission.entity';
 
 @Module({
   imports: [
 
-    TypeOrmModule.forFeature([User, Wallet, WalletTransaction]),
+    TypeOrmModule.forFeature([User, Wallet, WalletTransaction, Role, Permission]),
     JwtModule.registerAsync({
 
       imports: [ConfigModule],
