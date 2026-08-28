@@ -11,6 +11,8 @@ import { UserVerificationEnum } from 'src/common/types/entities.enum';
 import { Wallet } from 'src/entity/wallet.entity';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
+import { ChangePasswordDto } from './dto/changePassword.dto';
+import bcrypt from "bcrypt";
 
 @Injectable()
 export class AuthService {
@@ -84,6 +86,22 @@ export class AuthService {
         })
 
         return { message: "Welcome, You are login now", accessToken }
+
+    }
+
+    async changePassword (data: ChangePasswordDto, request: Request) {
+
+        const userId = request["user"].id;
+        const user = await this.userRepo.findOne({ where: { id: userId } });
+        if (!user) throw new NotFoundException("User Not Found!");
+
+        const hashedPassword = user.password;
+        const isMatch = await bcrypt.compare(data.pastPassword, hashedPassword);
+        if (!isMatch) throw new BadRequestException("The password are not match");
+
+        const newHashedPassword = await bcrypt.hash(data.newPassword, 12);
+        await this.userRepo.update({ id: userId }, { password: newHashedPassword });
+        return { message: "Your password changed successfully!" }
 
     }
 

@@ -5,6 +5,7 @@ import { SignUpDto } from './dto/signup.dto';
 import { OtpVerificationDto } from './dto/otpVerification.dto';
 import type { Response } from 'express';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
+import { ChangePasswordDto } from './dto/changePassword.dto';
 
 @ApiTags("Auth Management")
 @Controller('auth')
@@ -36,6 +37,16 @@ export class AuthController {
   async otpVerification (@Body() data: OtpVerificationDto, @Res({ passthrough: true }) response: Response) {
 
     return await this.authService.otpVerification(data, response);
+
+  }
+
+  @ApiOperation({ summary: "Change Password", description: "With this api you can change your password" })
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Post("change-password")
+  async changePassword (@Body() data: ChangePasswordDto, @Req() request: Request) {
+
+    return await this.authService.changePassword(data, request);
 
   }
 
