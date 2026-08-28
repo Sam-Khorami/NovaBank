@@ -7,12 +7,14 @@ import { VitalRecordsService } from '../vital-records/vital-records.service';
 import { MailService } from '../mail/mail.service';
 import { RedisService } from '../redis/redis.service';
 import { OtpVerificationDto } from './dto/otpVerification.dto';
-import { UserVerificationEnum } from 'src/common/types/entities.enum';
+import { UserRoleEnum, UserVerificationEnum } from 'src/common/types/entities.enum';
 import { Wallet } from 'src/entity/wallet.entity';
 import { JwtService } from '@nestjs/jwt';
 import { Response } from 'express';
 import { ChangePasswordDto } from './dto/changePassword.dto';
 import bcrypt from "bcrypt";
+import { Role } from 'src/entity/role.entity';
+import { Permission } from 'src/entity/permission.entity';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +23,8 @@ export class AuthService {
 
         @InjectRepository(User) private readonly userRepo: Repository<User>,
         @InjectRepository(Wallet) private readonly walletRepo: Repository<Wallet>,
+        @InjectRepository(Role) private readonly roleRepo: Repository<Role>,
+        @InjectRepository(Permission) private readonly permissionRepo: Repository<Permission>,
         private readonly vitalRecordsService: VitalRecordsService,
         private readonly redisService: RedisService,
         private readonly mailService: MailService,
@@ -33,10 +37,20 @@ export class AuthService {
         const checkUser = await this.userRepo.findOne({ where: { phoneNumber: data.phoneNumber } });
         if (checkUser) throw new ConflictException("User already signed up");
 
+        let role: Role;
+        
+        role = await this.roleRepo.findOne({ where: { name: UserRoleEnum.USER } });
+        if (!role) {
+
+            const newRole = this.roleRepo.create({ name: UserRoleEnum.USER });
+            role = await this.roleRepo.save(newRole);
+
+        }
+
         await this.vitalRecordsService.isMatch(data.phoneNumber, data.nationalCode);
         const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-        const newUnverifiedUser = this.userRepo.create({ phoneNumber: data.phoneNumber, email: data.email, nationalCode: data.nationalCode, password: data.password });
+        const newUnverifiedUser = this.userRepo.create({ phoneNumber: data.phoneNumber, email: data.email, nationalCode: data.nationalCode, password: data.password, roles: [role] });
         await this.userRepo.save(newUnverifiedUser);
 
         const newWallet = this.walletRepo.create({ user: newUnverifiedUser });
