@@ -68,6 +68,7 @@ export class AuthService {
         const userId = request["user"].id;
         const user = await this.userRepo.findOne({ where: { id: userId } });
         if (!user) throw new NotFoundException("User NotFound");
+        if (user.userVerification === UserVerificationEnum.UNVERIFIED) throw new BadRequestException("You are logout already");
 
         user.userVerification = UserVerificationEnum.UNVERIFIED;
         await this.userRepo.save(user);
