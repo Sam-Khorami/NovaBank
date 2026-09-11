@@ -6,6 +6,7 @@ import { GlobalExceptionFilter } from './common/filters/global.filter';
 import { AppLogger } from './common/logger/logger.service';
 import { LoggerInterceptor } from './common/interceptors/logger.interceptor';
 import { ValidationPipe } from '@nestjs/common';
+import compression from "compression";
 
 async function bootstrap() {
 
@@ -15,6 +16,8 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ResponseFormaterInterceptor, new LoggerInterceptor(logger));
   app.useGlobalFilters(new GlobalExceptionFilter(logger));
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+
+  app.use(compression());
 
   const config = new DocumentBuilder()
   .setTitle("Dental Hub")
