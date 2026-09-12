@@ -1,16 +1,30 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/users.entity';
 import { Repository } from 'typeorm';
+import { AddPermissionDto } from './dto/addPermission.dto';
+import { Permission } from 'src/entity/permission.entity';
 
 @Injectable()
 export class AdminService {
 
     constructor (
 
-        @InjectRepository(User) private readonly userRepo: Repository<User>
+        @InjectRepository(User) private readonly userRepo: Repository<User>,
+        @InjectRepository(Permission) private readonly permissionRepo: Repository<Permission>
 
     ) {}
+
+    async addPermission (data: AddPermissionDto) {
+
+        const permission = await this.permissionRepo.findOne({ where: { name: data.permission } });
+        if (permission) throw new ConflictException("The entered permission already exists!");
+
+        const newPermission = this.permissionRepo.create({ name: data.permission });
+        await this.permissionRepo.save(newPermission);
+        return { message: "The permission addded successfully!" }
+
+    }
 
     async getPermissions (userId: string) {
 
