@@ -4,10 +4,6 @@ export enum UserRoleEnum {
     SUPERADMIN = "superAdmin"
 }
 
-export enum UserPermissionEnum {
-    USERTEST = "user:test"
-}
-
 export enum WalletStatusEnum {
     Active = "active",
     Closed = "closed",
