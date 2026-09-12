@@ -5,9 +5,10 @@ import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { Permissions } from 'src/common/decorators/permission.decorator';
 import { PermissionsEnum } from 'src/common/types/permissions.enum';
 import { AddPermissionDto } from './dto/addPermission.dto';
+import { PermissionGuard } from 'src/common/guards/permission.guard';
 
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionGuard)
 @ApiTags("Admin Management")
 @Controller('admin')
 export class AdminController {
