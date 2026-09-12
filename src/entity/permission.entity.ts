@@ -1,4 +1,3 @@
-import { UserPermissionEnum } from "src/common/types/entities.enum";
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 
@@ -8,8 +7,8 @@ export class Permission {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column({ type: "enum", enum: UserPermissionEnum, nullable: true })
-    name: UserPermissionEnum;
+    @Column({ type: "varchar", length: 255, nullable: false, unique: true })
+    name: string;
 
     @CreateDateColumn()
     createdAt: Date;
