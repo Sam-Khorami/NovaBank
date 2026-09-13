@@ -6,6 +6,7 @@ import { Permissions } from 'src/common/decorators/permission.decorator';
 import { PermissionsEnum } from 'src/common/types/permissions.enum';
 import { AddPermissionDto } from './dto/addPermission.dto';
 import { PermissionGuard } from 'src/common/guards/permission.guard';
+import { AddRoleDto } from './dto/addRole.dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
@@ -19,10 +20,18 @@ export class AdminController {
   @ApiOperation({ summary: "Adding Permission", description: "With this api admin can add a new permission" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_ADD_PERMISSION)
   @Post("add-permission")
-  async addPermission (@Body() data: AddPermissionDto, @Req() request: Request) {
+  async addPermission (@Body() data: AddPermissionDto) {
 
-    console.log(request["user"]);
     return await this.adminService.addPermission(data);
+
+  }
+
+  @ApiOperation({ summary: "Adding Role", description: "With this api admin can add a new Role" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_ADD_ROLE)
+  @Post("add-role")
+  async addRole (@Body() data: AddRoleDto) {
+
+    return await this.adminService.addRole(data);
 
   }
 

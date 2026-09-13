@@ -4,6 +4,8 @@ import { User } from 'src/entity/users.entity';
 import { Repository } from 'typeorm';
 import { AddPermissionDto } from './dto/addPermission.dto';
 import { Permission } from 'src/entity/permission.entity';
+import { AddRoleDto } from './dto/addRole.dto';
+import { Role } from 'src/entity/role.entity';
 
 @Injectable()
 export class AdminService {
@@ -11,6 +13,7 @@ export class AdminService {
     constructor (
 
         @InjectRepository(User) private readonly userRepo: Repository<User>,
+        @InjectRepository(Role) private readonly roleRepo: Repository<Role>,
         @InjectRepository(Permission) private readonly permissionRepo: Repository<Permission>
 
     ) {}
@@ -23,6 +26,17 @@ export class AdminService {
         const newPermission = this.permissionRepo.create({ name: data.permission });
         await this.permissionRepo.save(newPermission);
         return { message: "The permission addded successfully!" }
+
+    }
+
+    async addRole (data: AddRoleDto) {
+
+        const role = await this.roleRepo.findOne({ where: { name: data.role } });
+        if (role) throw new ConflictException("The entered role already exists!");
+
+        const newRole = this.roleRepo.create({ name: data.role });
+        await this.roleRepo.save(newRole);
+        return { message: "The role addded successfully!" }
 
     }
 
