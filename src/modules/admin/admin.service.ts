@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/users.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { AddPermissionDto } from './dto/addPermission.dto';
 import { Permission } from 'src/entity/permission.entity';
 import { AddRoleDto } from './dto/addRole.dto';
@@ -44,7 +44,15 @@ export class AdminService {
     async getUsers (query: GetUsersDto) {
 
         const offset = (query.page - 1) * query.limit;
-        const [users, total] = await this.userRepo.findAndCount({ skip: offset, take: query.limit, order: { id: "ASC" } });
+        const where: FindOptionsWhere<User> = {};
+
+        if (query.phoneNumber) where.phoneNumber = query.phoneNumber;
+        if (query.nationalCode) where.nationalCode = query.nationalCode;
+        if (query.role) where.role = query.role;
+        if (query.userVerification) where.userVerification = query.userVerification;
+        if (query.emailVerification) where.emailVerification = query.emailVerification;
+
+        const [users, total] = await this.userRepo.findAndCount({ where, skip: offset, take: query.limit, order: { id: "ASC" } });
 
         const totalPages = Math.ceil(total / query.limit);
         return { data: users , pagination: { page: query.page, limit: query.limit, total, totalPages } }
