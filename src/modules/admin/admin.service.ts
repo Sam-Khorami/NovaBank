@@ -6,6 +6,7 @@ import { AddPermissionDto } from './dto/addPermission.dto';
 import { Permission } from 'src/entity/permission.entity';
 import { AddRoleDto } from './dto/addRole.dto';
 import { Role } from 'src/entity/role.entity';
+import { GetUsersDto } from './dto/getUsers.dto';
 
 @Injectable()
 export class AdminService {
@@ -37,6 +38,16 @@ export class AdminService {
         const newRole = this.roleRepo.create({ name: data.role });
         await this.roleRepo.save(newRole);
         return { message: "The role addded successfully!" }
+
+    }
+
+    async getUsers (query: GetUsersDto) {
+
+        const offset = (query.page - 1) * query.limit;
+        const [users, total] = await this.userRepo.findAndCount({ skip: offset, take: query.limit, order: { id: "ASC" } });
+
+        const totalPages = Math.ceil(total / query.limit);
+        return { data: users , pagination: { page: query.page, limit: query.limit, total, totalPages } }
 
     }
 

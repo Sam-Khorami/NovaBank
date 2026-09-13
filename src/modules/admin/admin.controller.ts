@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
@@ -7,6 +7,7 @@ import { PermissionsEnum } from 'src/common/types/permissions.enum';
 import { AddPermissionDto } from './dto/addPermission.dto';
 import { PermissionGuard } from 'src/common/guards/permission.guard';
 import { AddRoleDto } from './dto/addRole.dto';
+import { GetUsersDto } from './dto/getUsers.dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
@@ -32,6 +33,15 @@ export class AdminController {
   async addRole (@Body() data: AddRoleDto) {
 
     return await this.adminService.addRole(data);
+
+  }
+
+  @ApiOperation({ summary: "Get Users", description: "With this api admin can get users list" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_GET_USERS)
+  @Get("users")
+  async getUsers (@Query() query: GetUsersDto) {
+
+    return await this.adminService.getUsers(query);
 
   }
 
