@@ -22,7 +22,7 @@ export class AdminService {
     async getPermissionsList () {
 
         const permissions = await this.permissionRepo.find();
-        if (Object.keys(permissions).length === 0) throw new NotFoundException("The permissions not found!");
+        if (!permissions || Object.keys(permissions).length === 0) throw new NotFoundException("The permissions not found!");
 
         return { permissions }
 
@@ -42,10 +42,19 @@ export class AdminService {
     async deletePermission (permissionId: string) {
 
         const permission = await this.permissionRepo.findOne({ where: { id: permissionId } });
-        if (Object.keys(permission).length === 0) throw new NotFoundException("The permission not found!");
+        if (!permission || Object.keys(permission).length === 0) throw new NotFoundException("The permission not found!");
 
         await this.permissionRepo.remove(permission);
         return { message: "The entered permission removed successfully!" }
+
+    }
+
+    async getRolesList () {
+
+        const roles = await this.roleRepo.find();
+        if (!roles || Object.keys(roles).length === 0) throw new NotFoundException("The role not found!");
+
+        return { roles }
 
     }
 
@@ -59,6 +68,16 @@ export class AdminService {
         return { message: "The role addded successfully!" }
 
     }
+
+    // async deleteRole (roleId: string) {
+
+    //     const role = await this.roleRepo.findOne({ where: { id: roleId } });
+    //     if (!role || Object.keys(role).length === 0) throw new NotFoundException("The role not found!");
+
+    //     await this.roleRepo.remove(role);
+    //     return { message: "The entered role removed successfully!" }
+
+    // }
 
     async getUsers (query: GetUsersDto) {
 

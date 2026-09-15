@@ -18,7 +18,7 @@ export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
 
-  @ApiOperation({ summary: "Adding Permission", description: "With this api admin can get the list of permissions" })
+  @ApiOperation({ summary: "Getting Permission", description: "With this api admin can get the list of permissions" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_READ_PERMISSION)
   @Get("get-permissions")
   async getPermission () {
@@ -36,12 +36,21 @@ export class AdminController {
 
   }
 
-  @ApiOperation({ summary: "Adding Permission", description: "With this api admin can remove a new permission" })
+  @ApiOperation({ summary: "Deleting Permission", description: "With this api admin can remove a permission" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_DELETE_PERMISSION)
   @Delete("delete-permission/:permissionId")
   async deletePermission (@Param("permissionId", ParseUUIDPipe) permissionId: string) {
 
     return await this.adminService.deletePermission(permissionId);
+
+  }
+
+  @ApiOperation({ summary: "Getting Roles", description: "With this api admin can get the list of roles" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_READ_ROLE)
+  @Get("get-roles")
+  async getRoles () {
+
+    return await this.adminService.getRolesList();
 
   }
 
@@ -53,6 +62,15 @@ export class AdminController {
     return await this.adminService.addRole(data);
 
   }
+
+  // @ApiOperation({ summary: "Deleting Role", description: "With this api admin can remove a role" })
+  // @Permissions(PermissionsEnum.ADMIN_ACCESS_DELETE_ROLE)
+  // @Delete("delete-role/:roleId")
+  // async deleteRole (@Param("roleId", ParseUUIDPipe) roleId: string) {
+
+  //   return await this.adminService.deleteRole(roleId);
+
+  // }
 
   @ApiOperation({ summary: "Get Users", description: "With this api admin can get users list" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_GET_USERS)
