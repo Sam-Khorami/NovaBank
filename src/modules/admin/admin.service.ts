@@ -30,6 +30,16 @@ export class AdminService {
 
     }
 
+    async deletePermission (permissionId: string) {
+
+        const permission = await this.permissionRepo.findOne({ where: { id: permissionId } });
+        if (Object.keys(permission).length === 0) throw new NotFoundException("The permission not found!");
+
+        await this.permissionRepo.remove(permission);
+        return { message: "The entered permission removed successfully!" }
+
+    }
+
     async addRole (data: AddRoleDto) {
 
         const role = await this.roleRepo.findOne({ where: { name: data.role } });

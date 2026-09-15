@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
@@ -24,6 +24,15 @@ export class AdminController {
   async addPermission (@Body() data: AddPermissionDto) {
 
     return await this.adminService.addPermission(data);
+
+  }
+
+  @ApiOperation({ summary: "Adding Permission", description: "With this api admin can remove a new permission" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_DELETE_PERMISSION)
+  @Delete("delete-permission/:permissionId")
+  async deletePermission (@Param("permissionId", ParseUUIDPipe) permissionId: string) {
+
+    return await this.adminService.deletePermission(permissionId);
 
   }
 
