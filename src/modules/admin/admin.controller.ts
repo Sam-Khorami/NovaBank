@@ -63,14 +63,14 @@ export class AdminController {
 
   }
 
-  // @ApiOperation({ summary: "Deleting Role", description: "With this api admin can remove a role" })
-  // @Permissions(PermissionsEnum.ADMIN_ACCESS_DELETE_ROLE)
-  // @Delete("delete-role/:roleId")
-  // async deleteRole (@Param("roleId", ParseUUIDPipe) roleId: string) {
+  @ApiOperation({ summary: "Deleting Role", description: "With this api admin can remove a role" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_DELETE_ROLE)
+  @Delete("delete-role/:roleId")
+  async deleteRole (@Param("roleId", ParseUUIDPipe) roleId: string) {
 
-  //   return await this.adminService.deleteRole(roleId);
+    return await this.adminService.deleteRole(roleId);
 
-  // }
+  }
 
   @ApiOperation({ summary: "Get Users", description: "With this api admin can get users list" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_GET_USERS)

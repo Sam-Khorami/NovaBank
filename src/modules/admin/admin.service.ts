@@ -69,15 +69,15 @@ export class AdminService {
 
     }
 
-    // async deleteRole (roleId: string) {
+    async deleteRole (roleId: string) {
 
-    //     const role = await this.roleRepo.findOne({ where: { id: roleId } });
-    //     if (!role || Object.keys(role).length === 0) throw new NotFoundException("The role not found!");
+        const role = await this.roleRepo.findOne({ where: { id: roleId } });
+        if (!role || Object.keys(role).length === 0) throw new NotFoundException("The role not found!");
 
-    //     await this.roleRepo.remove(role);
-    //     return { message: "The entered role removed successfully!" }
+        await this.roleRepo.remove(role);
+        return { message: "The entered role removed successfully!" }
 
-    // }
+    }
 
     async getUsers (query: GetUsersDto) {
 
