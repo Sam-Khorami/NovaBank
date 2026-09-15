@@ -19,6 +19,15 @@ export class AdminService {
 
     ) {}
 
+    async getPermissionsList () {
+
+        const permissions = await this.permissionRepo.find();
+        if (Object.keys(permissions).length === 0) throw new NotFoundException("The permissions not found!");
+
+        return { permissions }
+
+    }
+
     async addPermission (data: AddPermissionDto) {
 
         const permission = await this.permissionRepo.findOne({ where: { name: data.permission } });

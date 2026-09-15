@@ -18,6 +18,15 @@ export class AdminController {
   constructor(private readonly adminService: AdminService) {}
 
 
+  @ApiOperation({ summary: "Adding Permission", description: "With this api admin can get the list of permissions" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_READ_PERMISSION)
+  @Get("get-permissions")
+  async getPermission () {
+
+    return await this.adminService.getPermissionsList();
+
+  }
+
   @ApiOperation({ summary: "Adding Permission", description: "With this api admin can add a new permission" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_ADD_PERMISSION)
   @Post("add-permission")
