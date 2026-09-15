@@ -27,7 +27,10 @@ async function bootstrap() {
   .build()
 
   const document = SwaggerModule.createDocument(app, config);
-  process.env.NODE_ENV === "development" && SwaggerModule.setup("api", app, document, { swaggerOptions: { persistAuthorization: true } });
+  process.env.NODE_ENV === "development" && SwaggerModule.setup("api", app, document, { swaggerOptions: { 
+    
+    persistAuthorization: true, 
+    operationsSorter: (a, b) => { const order = { get: 1, post: 2, patch: 3, put: 4, delete: 5 }; return order[a.get('method')] - order[b.get('method')] } } });
 
   await app.listen(process.env.PORT ?? 3000);
 
