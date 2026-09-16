@@ -79,6 +79,29 @@ export class AdminService {
 
     }
 
+    async assignRole (userId: string, roleId: string) {
+
+        const user = await this.userRepo.findOne({ where: { id: userId }, relations: { roles: true } });
+        if (!user) throw new NotFoundException("The user not found!");
+
+        const role = await this.roleRepo.findOne({ where: { id: roleId } });
+        if (!role) throw new NotFoundException("The role not found!");
+
+        user.roles.forEach((item) => {
+
+            if (item.name === role.name) throw new BadRequestException("The user already has this role!");
+
+        })
+
+        user.roles = [];
+        user.roles.push(role);
+        user.role = role.name;
+        await this.userRepo.save(user);
+
+        return { message: "The entered role assigned" }
+
+    }
+
     async getUsers (query: GetUsersDto) {
 
         const offset = (query.page - 1) * query.limit;
