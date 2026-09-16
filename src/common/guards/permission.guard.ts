@@ -27,6 +27,8 @@ export class PermissionGuard implements CanActivate {
         if (!user) throw new NotFoundException("User Not Found!");
 
         const askedPermissions: string[] = this.reflector.getAllAndOverride(PERMISSION_KEY, [ context.getHandler(), context.getClass() ]);
+        if (!askedPermissions) return true;
+
         const userPermissions = await this.adminService.getPermissions(userId);
 
         const check = askedPermissions.every((item) => userPermissions.includes(item));
