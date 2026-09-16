@@ -32,7 +32,7 @@ export class User {
     lastName: string;
 
     @Column({ type: "enum", enum: UserRoleEnum, nullable: false, default: UserRoleEnum.USER })
-    role: UserRoleEnum;
+    role: UserRoleEnum | string;
 
     @Column({ type: "enum", enum: UserVerificationEnum, nullable: false, default: UserVerificationEnum.UNVERIFIED })
     userVerification: UserVerificationEnum;
