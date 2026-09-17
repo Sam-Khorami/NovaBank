@@ -102,6 +102,26 @@ export class AdminService {
 
     }
 
+    async assignPermissionToUser (userId: string, permissionId: string) {
+
+        const user = await this.userRepo.findOne({ where: { id: userId }, relations: { permissions: true } });
+        if (!user) throw new NotFoundException("The user not found!");
+
+        const permission = await this.permissionRepo.findOne({ where: { id: permissionId } });
+        if (!permission) throw new NotFoundException("The permission not found!");
+
+        user.permissions.forEach((item) => {
+
+            if (item.name === permission.name) throw new BadRequestException("The user already has that permission");
+
+        })
+
+        user.permissions.push(permission);
+        await this.userRepo.save(user);
+        return { message: "The permission assigned" }
+
+    }
+
     async getUsers (query: GetUsersDto) {
 
         const offset = (query.page - 1) * query.limit;

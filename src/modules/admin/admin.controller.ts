@@ -81,6 +81,15 @@ export class AdminController {
 
   }
 
+  @ApiOperation({ summary: "Assigning Permission To User", description: "With this api admin can assign a permission to users" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_ASSIGN_PERMISSION)
+  @Post("assign-permission-to-user/:userId/:permissionId")
+  async assignPermissionToUser (@Param("userId", ParseUUIDPipe) userId: string, @Param("permissionId", ParseUUIDPipe) permissionId: string) {
+
+    return await this.adminService.assignPermissionToUser(userId, permissionId);
+
+  }
+
   @ApiOperation({ summary: "Get Users", description: "With this api admin can get users list" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_GET_USERS)
   @Get("users")
