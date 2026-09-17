@@ -122,6 +122,26 @@ export class AdminService {
 
     }
 
+    async assignPermissionToRole (permissionId: string, roleId: string) {
+
+        const permission = await this.permissionRepo.findOne({ where: { id: permissionId } });
+        if (!permission) throw new NotFoundException("The permission not found!");
+
+        const role = await this.roleRepo.findOne({ where: { id: roleId }, relations: { permissions: true } });
+        if (!role) throw new NotFoundException("The role not found!");
+
+        role.permissions.forEach((item) => {
+
+            if (item.name === permission.name) throw new BadRequestException("The permission already assigned for this role!");
+
+        })
+
+        role.permissions.push(permission);
+        await this.roleRepo.save(role);
+        return { message: "The permission assigned to this role" }
+
+    }
+
     async getUsers (query: GetUsersDto) {
 
         const offset = (query.page - 1) * query.limit;
