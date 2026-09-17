@@ -108,6 +108,14 @@ export class AdminController {
 
   }
 
+  @ApiOperation({ summary: "Getting Role Permissions", description: "With this api admin can get roles permissions" })
+  @Get("role-permissions/:roleId")
+  async getRolePermissions (@Param("roleId", ParseUUIDPipe) roleId: string) {
+
+    return await this.adminService.getRolePermissions(roleId);
+
+  }
+
   @ApiOperation({ summary: "Get Users", description: "With this api admin can get users list" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_GET_USERS)
   @Get("users")

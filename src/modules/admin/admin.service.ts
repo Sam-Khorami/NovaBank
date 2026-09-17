@@ -170,6 +170,16 @@ export class AdminService {
 
     }
 
+    async getRolePermissions (roleId: string) {
+
+        const role = await this.roleRepo.findOne({ where: { id: roleId }, relations: { permissions: true } });
+        if (!role) throw new NotFoundException("The role not found!");
+
+        const rolePermissions = role.permissions;
+        return { rolePermissions }
+
+    }
+
     async getUsers (query: GetUsersDto) {
 
         const offset = (query.page - 1) * query.limit;
