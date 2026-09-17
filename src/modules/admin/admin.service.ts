@@ -191,7 +191,27 @@ export class AdminService {
         const checkUserPermission = user.permissions.some((item) => { return item.name === permission.name })
         if (!checkUserPermission) throw new BadRequestException("The permission does not exist");
 
-        await this.permissionRepo.remove(permission);
+        user.permissions = user.permissions.filter((item) => item.name !== permission.name);
+        await this.userRepo.save(user);
+
+        return { message: "The permission was revoked from user" }
+
+    }
+
+    async revokePermissionFromRole (roleId: string, permissionId: string) {
+
+        const role = await this.roleRepo.findOne({ where: { id: roleId }, relations: { permissions: true } });
+        if (!role) throw new NotFoundException("The role not found!");
+
+        const permission = await this.permissionRepo.findOne({ where: { id: permissionId } });
+        if (!permission) throw new NotFoundException("The permission not found!");
+
+        const checkRolePermission = role.permissions.some((item) => { return item.name === permission.name })
+        if (!checkRolePermission) throw new BadRequestException("The permission does not exist");
+
+        role.permissions = role.permissions.filter((item) => item.name !== permission.name);
+        await this.roleRepo.save(role);
+
         return { message: "The permission was revoked from user" }
 
     }
