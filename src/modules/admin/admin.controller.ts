@@ -117,6 +117,13 @@ export class AdminController {
 
   }
 
+  @Delete("revoke-permission/:userId/:permissionId")
+  async revokePermissionFromUser (@Param("userId", ParseUUIDPipe) userId: string, @Param("permissionId", ParseUUIDPipe) permissionId: string) {
+
+    return await this.adminService.revokePermissionFromUser(userId, permissionId)
+
+  }
+
   @ApiOperation({ summary: "Get Users", description: "With this api admin can get users list" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_GET_USERS)
   @Get("users")

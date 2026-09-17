@@ -180,6 +180,22 @@ export class AdminService {
 
     }
 
+    async revokePermissionFromUser (userId: string, permissionId: string) {
+
+        const user = await this.userRepo.findOne({ where: { id: userId }, relations: { permissions: true } });
+        if (!user) throw new NotFoundException("The user not found!");
+
+        const permission = await this.permissionRepo.findOne({ where: { id: permissionId } });
+        if (!permission) throw new NotFoundException("The permission not found!");
+
+        const checkUserPermission = user.permissions.some((item) => { return item.name === permission.name })
+        if (!checkUserPermission) throw new BadRequestException("The permission does not exist");
+
+        await this.permissionRepo.remove(permission);
+        return { message: "The permission was revoked from user" }
+
+    }
+
     async getUsers (query: GetUsersDto) {
 
         const offset = (query.page - 1) * query.limit;
