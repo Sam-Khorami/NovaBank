@@ -91,6 +91,7 @@ export class AdminController {
   }
 
   @ApiOperation({ summary: "Getting User Permissions", description: "With this api admin can get user's permissions" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_READ_PERMISSION)
   @Get("permissions/:userId")
   async getUserPermissions (@Param("userId", ParseUUIDPipe) userId: string) {
 
