@@ -19,7 +19,7 @@ export class IpService {
 
         this.BLOCKED_UNTIL = 2;
         this.WINDOW_TIME = 2;
-        this.MAX_REQUEST = 10;
+        this.MAX_REQUEST = 40;
 
     }
 
