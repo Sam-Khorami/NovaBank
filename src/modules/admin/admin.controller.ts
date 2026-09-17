@@ -127,6 +127,7 @@ export class AdminController {
   }
 
   @ApiOperation({ summary: "Revoke Permission From Role", description: "With this api admin can revoke a permission from a role" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_REVOKE_PERMISSION)
   @Delete("revoke-permission-from-role/:roleId/:permissionId")
   async revokePermissionFromRole (@Param("roleId", ParseUUIDPipe) roleId: string, @Param("permissionId", ParseUUIDPipe) permissionId: string) {
 
