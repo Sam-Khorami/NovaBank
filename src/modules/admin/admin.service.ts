@@ -122,6 +122,34 @@ export class AdminService {
 
     }
 
+    async getUserPermissions (userId: string) {
+
+        const permissions = new Set<string>();
+
+        const user = await this.userRepo.findOne({ where: { id: userId }, relations: { permissions: true, roles: { permissions: true } } });
+        if (!user) throw new NotFoundException("The user not found!");
+
+        user.permissions.forEach((permission) => {
+
+            permissions.add(permission.name);
+
+        })
+
+        user.roles.forEach((role) => {
+
+            role.permissions.forEach((permission) => {
+
+                permissions.add(permission.name);
+
+            })
+
+        })
+
+        const permissionArray = Array.from(permissions);
+        return { permissionArray }
+
+    }
+
     async assignPermissionToRole (permissionId: string, roleId: string) {
 
         const permission = await this.permissionRepo.findOne({ where: { id: permissionId } });
