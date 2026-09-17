@@ -117,6 +117,8 @@ export class AdminController {
 
   }
 
+  @ApiOperation({ summary: "Revoke Permission From User", description: "With this api admin can revoke a permission from a user" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_REVOKE_PERMISSION)
   @Delete("revoke-permission/:userId/:permissionId")
   async revokePermissionFromUser (@Param("userId", ParseUUIDPipe) userId: string, @Param("permissionId", ParseUUIDPipe) permissionId: string) {
 
