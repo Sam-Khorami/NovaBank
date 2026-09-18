@@ -23,12 +23,14 @@ export class KycGuard implements CanActivate {
         if (!kycOnly) return true;
 
         const request = context.switchToHttp().getRequest();
+        if (!request.user) throw new UnauthorizedException("The user is unauthorized!");
 
-        const userId = request["user"].id;
-        const user = await this.userRepo.findOne({ where: { id: userId } });
+        let user = request.user;
+
+        user = await this.userRepo.findOneBy({ id: user.id });
         if (!user) throw new NotFoundException("The user not found!");
 
-        if (user.kycStatus !== KycStatusEnum.APPROVED) throw new HttpException("Your account does not confirmed yet", HttpStatus.LOCKED);
+        if (user.kycStatus !== KycStatusEnum.APPROVED) throw new HttpException("Your account has not yet been confirmed", HttpStatus.LOCKED);
         return true;
 
     }
