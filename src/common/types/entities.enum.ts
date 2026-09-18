@@ -37,3 +37,9 @@ export enum KycStatusEnum {
     APPROVED = "approved",
     REJECTED = "rejected"
 }
+
+export enum DocumentStatusEnum {
+    APPROVED = "approved",
+    REJECTED = "rejected",
+    PENDING = "pending"
+}
