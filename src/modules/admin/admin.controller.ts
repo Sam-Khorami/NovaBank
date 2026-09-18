@@ -136,6 +136,7 @@ export class AdminController {
   }
 
   @ApiOperation({ summary: "Accept Kyc", description: "With this api admin can accept kyc" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_MANAGE_KYC)
   @Patch("accept-kyc/:documentId")
   async acceptKyc (@Param("documentId", ParseUUIDPipe) documentId: string) {
 
