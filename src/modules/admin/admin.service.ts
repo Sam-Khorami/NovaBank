@@ -9,6 +9,7 @@ import { Role } from 'src/entity/role.entity';
 import { GetUsersDto } from './dto/getUsers.dto';
 import { Documents } from 'src/entity/documents.entity';
 import { DocumentStatusEnum, KycStatusEnum } from 'src/common/types/entities.enum';
+import { GetUserKycStatusDto } from './dto/getUserKycStatus.dto';
 
 @Injectable()
 export class AdminService {
@@ -216,6 +217,18 @@ export class AdminService {
         await this.roleRepo.save(role);
 
         return { message: "The permission was revoked from user" }
+
+    }
+
+    async getUserKycStatus (query: GetUserKycStatusDto) {
+
+        const offset = (query.page - 1) * query.limit;
+        const where: FindOptionsWhere<User> = {};
+
+        if (query.status) where.kycStatus = query.status;
+        const [statuses, total] = await this.userRepo.findAndCount({ where, skip: offset, take: query.limit, order: { id: "ASC" } });
+
+        return { data: statuses , pagination: { page: query.page, limit: query.limit, total } }
 
     }
 

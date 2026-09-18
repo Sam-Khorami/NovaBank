@@ -8,6 +8,7 @@ import { AddPermissionDto } from './dto/addPermission.dto';
 import { PermissionGuard } from 'src/common/guards/permission.guard';
 import { AddRoleDto } from './dto/addRole.dto';
 import { GetUsersDto } from './dto/getUsers.dto';
+import { GetUserKycStatusDto } from './dto/getUserKycStatus.dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
@@ -132,6 +133,15 @@ export class AdminController {
   async revokePermissionFromRole (@Param("roleId", ParseUUIDPipe) roleId: string, @Param("permissionId", ParseUUIDPipe) permissionId: string) {
 
     return await this.adminService.revokePermissionFromRole(roleId, permissionId)
+
+  }
+
+  @ApiOperation({ summary: "Get User Kyc Status", description: "With this api admin can see all user kyc statuses" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_MANAGE_KYC)
+  @Get("get-user-kyc-status")
+  async getUserKycStatus (@Query() query: GetUserKycStatusDto) {
+
+    return await this.adminService.getUserKycStatus(query);
 
   }
 
