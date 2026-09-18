@@ -144,6 +144,15 @@ export class AdminController {
 
   }
 
+  @ApiOperation({ summary: "Reject Kyc", description: "With this api admin can reject kyc" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_MANAGE_KYC)
+  @Patch("reject-kyc/:documentId")
+  async rejectKyc (@Param("documentId", ParseUUIDPipe) documentId: string) {
+
+    return await this.adminService.rejectKyc(documentId);
+
+  }
+
   @ApiOperation({ summary: "Get Users", description: "With this api admin can get users list" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_GET_USERS)
   @Get("users")

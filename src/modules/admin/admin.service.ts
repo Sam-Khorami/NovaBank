@@ -228,6 +228,8 @@ export class AdminService {
         if (!user) throw new NotFoundException("The user not found!");
 
         if (document.status === DocumentStatusEnum.APPROVED && user.kycStatus === KycStatusEnum.APPROVED) throw new BadRequestException("The document approved already!");
+        if (document.status !== DocumentStatusEnum.PENDING && user.kycStatus !== KycStatusEnum.UNDER_REVIEW) throw new BadRequestException("The document status set already");
+        
         document.status = DocumentStatusEnum.APPROVED;
         user.kycStatus = KycStatusEnum.APPROVED;
 
@@ -235,6 +237,27 @@ export class AdminService {
         await this.userRepo.save(user);
 
         return { message: "The document approved successfully" }
+
+    }
+
+    async rejectKyc (documentId: string) {
+
+        const document = await this.documentsRepo.findOne({ where: { id: documentId } });
+        if (!document) throw new NotFoundException("The document not found");
+
+        const user = await this.userRepo.findOne({ where: { id: document.userId } });
+        if (!user) throw new NotFoundException("The user not found!");
+
+        if (document.status === DocumentStatusEnum.REJECTED && user.kycStatus === KycStatusEnum.REJECTED) throw new BadRequestException("The document rejected already!");
+        if (document.status !== DocumentStatusEnum.PENDING && user.kycStatus !== KycStatusEnum.UNDER_REVIEW) throw new BadRequestException("The document status set already");
+        
+        document.status = DocumentStatusEnum.REJECTED;
+        user.kycStatus = KycStatusEnum.REJECTED;
+
+        await this.documentsRepo.save(document);
+        await this.userRepo.save(user);
+
+        return { message: "The document rejected successfully" }
 
     }
 
