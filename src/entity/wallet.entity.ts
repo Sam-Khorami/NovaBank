@@ -22,7 +22,7 @@ export class Wallet {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @OneToOne(() => User, (user) => user.wallet)
+    @OneToOne(() => User, (user) => user.wallet, { onDelete: "CASCADE" })
     @JoinColumn({ name: "userId" })
     user: User;
 
