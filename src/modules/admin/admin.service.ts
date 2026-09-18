@@ -10,6 +10,7 @@ import { GetUsersDto } from './dto/getUsers.dto';
 import { Documents } from 'src/entity/documents.entity';
 import { DocumentStatusEnum, KycStatusEnum } from 'src/common/types/entities.enum';
 import { GetUserKycStatusDto } from './dto/getUserKycStatus.dto';
+import { GetDocumentStatusDto } from './dto/getDocumentStatus.dto';
 
 @Injectable()
 export class AdminService {
@@ -227,6 +228,18 @@ export class AdminService {
 
         if (query.status) where.kycStatus = query.status;
         const [statuses, total] = await this.userRepo.findAndCount({ where, skip: offset, take: query.limit, order: { id: "ASC" } });
+
+        return { data: statuses , pagination: { page: query.page, limit: query.limit, total } }
+
+    }
+
+    async getDocumentStatus (query: GetDocumentStatusDto) {
+
+        const offset = (query.page - 1) * query.limit;
+        const where: FindOptionsWhere<Documents> = {};
+
+        if (query.status) where.status = query.status;
+        const [statuses, total] = await this.documentsRepo.findAndCount({ where, skip: offset, take: query.limit, order: { id: "ASC" } });
 
         return { data: statuses , pagination: { page: query.page, limit: query.limit, total } }
 

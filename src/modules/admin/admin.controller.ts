@@ -9,6 +9,7 @@ import { PermissionGuard } from 'src/common/guards/permission.guard';
 import { AddRoleDto } from './dto/addRole.dto';
 import { GetUsersDto } from './dto/getUsers.dto';
 import { GetUserKycStatusDto } from './dto/getUserKycStatus.dto';
+import { GetDocumentStatusDto } from './dto/getDocumentStatus.dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
@@ -142,6 +143,15 @@ export class AdminController {
   async getUserKycStatus (@Query() query: GetUserKycStatusDto) {
 
     return await this.adminService.getUserKycStatus(query);
+
+  }
+
+  @ApiOperation({ summary: "Get Document Status", description: "With this api admin can see all documents statuses" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_MANAGE_KYC)
+  @Get("get-document-status")
+  async getDocumentStatus (@Query() query: GetDocumentStatusDto) {
+
+    return await this.adminService.getDocumentStatus(query);
 
   }
 
