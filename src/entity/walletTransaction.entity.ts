@@ -31,11 +31,11 @@ export class WalletTransaction {
     @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(() => Wallet, (wallet) => wallet.transactions)
+    @ManyToOne(() => Wallet, (wallet) => wallet.transactions, { onDelete: "CASCADE" })
     @JoinColumn({ name: "walletId" })
     wallet: Wallet;
 
-    @ManyToOne(() => User, (user) => user.walletTransactions)
+    @ManyToOne(() => User, (user) => user.walletTransactions, { onDelete: "CASCADE" })
     @JoinColumn({ name: "userId" })
     user: User;
 
