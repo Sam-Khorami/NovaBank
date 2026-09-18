@@ -1,7 +1,9 @@
-import { Column, CreateDateColumn, Index, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./users.entity";
+import { DocumentStatusEnum } from "src/common/types/entities.enum";
 
 
+@Entity("documents")
 export class Documents {
 
     @PrimaryGeneratedColumn("uuid")
@@ -10,7 +12,10 @@ export class Documents {
     @Column({ type: "varchar", nullable: false })
     file: string;
 
-    @ManyToOne(() => User, (user) => user.documents)
+    @Column({ type: "enum", enum: DocumentStatusEnum, nullable: false, default: DocumentStatusEnum.PENDING })
+    status: DocumentStatusEnum;
+
+    @ManyToOne(() => User, (user) => user.documents, { onDelete: "CASCADE" })
     user: User;
 
     @Index()
