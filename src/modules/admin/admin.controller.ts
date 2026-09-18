@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
@@ -132,6 +132,14 @@ export class AdminController {
   async revokePermissionFromRole (@Param("roleId", ParseUUIDPipe) roleId: string, @Param("permissionId", ParseUUIDPipe) permissionId: string) {
 
     return await this.adminService.revokePermissionFromRole(roleId, permissionId)
+
+  }
+
+  @ApiOperation({ summary: "Accept Kyc", description: "With this api admin can accept kyc" })
+  @Patch("accept-kyc/:documentId")
+  async acceptKyc (@Param("documentId", ParseUUIDPipe) documentId: string) {
+
+    return await this.adminService.acceptKyc(documentId);
 
   }
 

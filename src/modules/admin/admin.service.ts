@@ -7,6 +7,8 @@ import { Permission } from 'src/entity/permission.entity';
 import { AddRoleDto } from './dto/addRole.dto';
 import { Role } from 'src/entity/role.entity';
 import { GetUsersDto } from './dto/getUsers.dto';
+import { Documents } from 'src/entity/documents.entity';
+import { DocumentStatusEnum, KycStatusEnum } from 'src/common/types/entities.enum';
 
 @Injectable()
 export class AdminService {
@@ -15,6 +17,7 @@ export class AdminService {
 
         @InjectRepository(User) private readonly userRepo: Repository<User>,
         @InjectRepository(Role) private readonly roleRepo: Repository<Role>,
+        @InjectRepository(Documents) private readonly documentsRepo: Repository<Documents>,
         @InjectRepository(Permission) private readonly permissionRepo: Repository<Permission>
 
     ) {}
@@ -213,6 +216,25 @@ export class AdminService {
         await this.roleRepo.save(role);
 
         return { message: "The permission was revoked from user" }
+
+    }
+
+    async acceptKyc (documentId: string) {
+
+        const document = await this.documentsRepo.findOne({ where: { id: documentId } });
+        if (!document) throw new NotFoundException("The document not found");
+
+        const user = await this.userRepo.findOne({ where: { id: document.userId } });
+        if (!user) throw new NotFoundException("The user not found!");
+
+        if (document.status === DocumentStatusEnum.APPROVED && user.kycStatus === KycStatusEnum.APPROVED) throw new BadRequestException("The document approved already!");
+        document.status = DocumentStatusEnum.APPROVED;
+        user.kycStatus = KycStatusEnum.APPROVED;
+
+        await this.documentsRepo.save(document);
+        await this.userRepo.save(user);
+
+        return { message: "The document approved successfully" }
 
     }
 
