@@ -1,7 +1,7 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entity/users.entity';
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { DataSource, FindOptionsWhere, Repository } from 'typeorm';
 import { AddPermissionDto } from './dto/addPermission.dto';
 import { Permission } from 'src/entity/permission.entity';
 import { AddRoleDto } from './dto/addRole.dto';
@@ -11,6 +11,7 @@ import { Documents } from 'src/entity/documents.entity';
 import { DocumentStatusEnum, KycStatusEnum } from 'src/common/types/entities.enum';
 import { GetUserKycStatusDto } from './dto/getUserKycStatus.dto';
 import { GetDocumentStatusDto } from './dto/getDocumentStatus.dto';
+import { Wallet } from 'src/entity/wallet.entity';
 
 @Injectable()
 export class AdminService {
@@ -20,7 +21,9 @@ export class AdminService {
         @InjectRepository(User) private readonly userRepo: Repository<User>,
         @InjectRepository(Role) private readonly roleRepo: Repository<Role>,
         @InjectRepository(Documents) private readonly documentsRepo: Repository<Documents>,
-        @InjectRepository(Permission) private readonly permissionRepo: Repository<Permission>
+        @InjectRepository(Wallet) private readonly walletRepo: Repository<Wallet>,
+        @InjectRepository(Permission) private readonly permissionRepo: Repository<Permission>,
+        private readonly dataSource: DataSource
 
     ) {}
 
@@ -247,22 +250,43 @@ export class AdminService {
 
     async acceptKyc (documentId: string) {
 
-        const document = await this.documentsRepo.findOne({ where: { id: documentId } });
-        if (!document) throw new NotFoundException("The document not found");
+        await this.dataSource.transaction(async (manager) => {
 
-        const user = await this.userRepo.findOne({ where: { id: document.userId } });
-        if (!user) throw new NotFoundException("The user not found!");
+            const walletRepo = manager.getRepository(Wallet);
+            const documentsRepo = manager.getRepository(Documents);
+            const userRepo = manager.getRepository(User);
+            
+            const document = await documentsRepo.findOne({ where: { id: documentId } });
+            if (!document) throw new NotFoundException("The document not found");
+    
+            const user = await userRepo.findOne({ where: { id: document.userId } });
+            if (!user) throw new NotFoundException("The user not found!");
 
-        if (document.status === DocumentStatusEnum.APPROVED && user.kycStatus === KycStatusEnum.APPROVED) throw new BadRequestException("The document approved already!");
-        if (document.status !== DocumentStatusEnum.PENDING && user.kycStatus !== KycStatusEnum.UNDER_REVIEW) throw new BadRequestException("The document status set already");
-        
-        document.status = DocumentStatusEnum.APPROVED;
-        user.kycStatus = KycStatusEnum.APPROVED;
+            if (document.status === DocumentStatusEnum.APPROVED && user.kycStatus === KycStatusEnum.APPROVED) throw new BadRequestException("The document approved already!");
+            if (document.status !== DocumentStatusEnum.PENDING && user.kycStatus !== KycStatusEnum.UNDER_REVIEW) throw new BadRequestException("The document status set already");
+            
+            document.status = DocumentStatusEnum.APPROVED;
+            user.kycStatus = KycStatusEnum.APPROVED;
+            
+            const wallet = await walletRepo.findOne({ where: { userId: user.id } });
+            if (!wallet) throw new NotFoundException("The wallet not found!");
 
-        await this.documentsRepo.save(document);
-        await this.userRepo.save(user);
+            const randomAccountNumber = Math.floor(100000000000 + Math.random() * 900000000000).toString();
+            const shabaNumber = `${wallet.countryCode}${wallet.controlDigit}${wallet.bankCode}${wallet.accountCodeType}000000${randomAccountNumber}`;
+            const randomCardNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+            const cardNumber = `603799${randomCardNumber}`;
 
-        return { message: "The document approved successfully" }
+            wallet.accountNumber = randomAccountNumber;
+            wallet.shabaNumber = shabaNumber;
+            wallet.cardNumber = cardNumber;
+
+            await documentsRepo.save(document);
+            await userRepo.save(user);
+            await walletRepo.save(wallet);
+
+        })
+
+        return { message: "The document approved successfully and account created successfully!" }
 
     }
 
