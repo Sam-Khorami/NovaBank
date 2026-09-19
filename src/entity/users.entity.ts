@@ -6,6 +6,7 @@ import { WalletTransaction } from "./walletTransaction.entity";
 import { Role } from "./role.entity";
 import { Permission } from "./permission.entity";
 import { Documents } from "./documents.entity";
+import { Notfications } from "./notfication.entity";
 
 
 @Entity("users")
@@ -66,6 +67,9 @@ export class User {
 
     @OneToMany(() => Documents, (documents) => documents.user)
     documents: Documents[];
+
+    @OneToMany(() => Notfications, (notfications) => notfications.user)
+    notfications: Notfications[];
 
     @BeforeInsert()
     async hashPassword () {
