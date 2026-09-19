@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./users.entity";
 import { AccountCodeTypeEnum, AccountTypeEnum, CountryCodeEnum, WalletStatusEnum } from "src/common/types/entities.enum";
 import { WalletTransaction } from "./walletTransaction.entity";
@@ -13,8 +13,17 @@ export class Wallet {
     @Column({ type: 'numeric', precision: 20, scale: 8, nullable: false, default: 0 })
     balance: number;
 
+    @Index({ unique: true })
     @Column({ type: "varchar", nullable: true })
-    accountNumber: string;
+    accountNumber: string | null;
+
+    @Index({ unique: true })
+    @Column({ type: "varchar", nullable: true })
+    shabaNumber: string | null;
+
+    @Index({ unique: true })
+    @Column({ type: "varchar", nullable: true })
+    cardNumber: string | null;
 
     @Column({ type: "enum", enum: CountryCodeEnum, nullable: false, default: CountryCodeEnum.IR })
     countryCode: CountryCodeEnum;
@@ -28,7 +37,7 @@ export class Wallet {
     @Column({ type: "enum", enum: AccountCodeTypeEnum, nullable: false, default: AccountCodeTypeEnum.ZERO })
     accountCodeType: AccountCodeTypeEnum;
 
-    @Column({ type: "enum", enum: AccountTypeEnum, nullable: false, default: AccountTypeEnum.DEPOSIT_ACCOUNT })
+    @Column({ type: "enum", enum: AccountTypeEnum, nullable: false, default: AccountTypeEnum.ZERO_DEPOSIT_ACCOUNT })
     accountType: AccountTypeEnum;
 
     @Column({ type: "enum", enum: WalletStatusEnum, default: WalletStatusEnum.Active, nullable: false })
