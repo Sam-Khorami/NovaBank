@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Notfications } from 'src/entity/notfication.entity';
 import { User } from 'src/entity/users.entity';
@@ -13,5 +13,16 @@ export class NotficationsService {
         @InjectRepository(Notfications) private readonly notficationRepo: Repository<Notfications>
 
     ) {}
+
+    async notficationForUser (userId: string, title: string, message: string) {
+
+        const user = await this.userRepo.findOne({ where: { id: userId } });
+        if (!user) throw new NotFoundException("The user not found!");
+        
+        const newNotfication = this.notficationRepo.create({ title, message, user: { id: userId }, userId });
+        await this.notficationRepo.save(newNotfication);
+        return;
+
+    }
 
 }
