@@ -6,11 +6,13 @@ import { User } from 'src/entity/users.entity';
 import { Role } from 'src/entity/role.entity';
 import { Permission } from 'src/entity/permission.entity';
 import { Documents } from 'src/entity/documents.entity';
+import { Wallet } from 'src/entity/wallet.entity';
+import { WalletTransaction } from 'src/entity/walletTransaction.entity';
 
 @Module({
   imports: [
 
-    TypeOrmModule.forFeature([User, Role, Permission, Documents])
+    TypeOrmModule.forFeature([User, Role, Permission, Documents, Wallet, WalletTransaction])
 
   ],
   controllers: [AdminController],
