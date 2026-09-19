@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./users.entity";
 import { TransactionStatusEnum, TransactionTypeEnum } from "src/common/types/entities.enum";
 import { Wallet } from "./wallet.entity";
@@ -35,8 +35,16 @@ export class WalletTransaction {
     @JoinColumn({ name: "walletId" })
     wallet: Wallet;
 
+    @Index()
+    @Column({ type: "uuid" })
+    walletId: string;
+
     @ManyToOne(() => User, (user) => user.walletTransactions, { onDelete: "CASCADE" })
     @JoinColumn({ name: "userId" })
     user: User;
+
+    @Index()
+    @Column({ type: "uuid" })
+    userId: string;
 
 }
