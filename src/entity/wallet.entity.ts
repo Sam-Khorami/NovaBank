@@ -53,6 +53,10 @@ export class Wallet {
     @JoinColumn({ name: "userId" })
     user: User;
 
+    @Index()
+    @Column({ type: "uuid" })
+    userId: string;
+
     @OneToMany(() => WalletTransaction, (walletTransactions) => walletTransactions.wallet)
     transactions: WalletTransaction[];
 
