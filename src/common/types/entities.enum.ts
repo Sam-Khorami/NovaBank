@@ -57,9 +57,9 @@ export enum AccountCodeTypeEnum {
 }
 
 export enum AccountTypeEnum {
-    DEPOSIT_ACCOUNT = "deposit_account",
-    FACILITY_ACCOUNT = "facility_account",
-    INVESTMENT_DEPOSIT_ACCOUNT = "investment_deposit_account",
-    SAVINGS_ACCOUNT = "savings_account",
-    CHECKING_ACCOUNT = "checking account"
+    ZERO_DEPOSIT_ACCOUNT = "deposit_account",
+    ONE_FACILITY_ACCOUNT = "facility_account",
+    TWO_INVESTMENT_DEPOSIT_ACCOUNT = "investment_deposit_account",
+    THREE_SAVINGS_ACCOUNT = "savings_account",
+    FOUR_CHECKING_ACCOUNT = "checking account"
 }
