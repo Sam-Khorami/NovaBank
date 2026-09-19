@@ -43,3 +43,23 @@ export enum DocumentStatusEnum {
     REJECTED = "rejected",
     PENDING = "pending"
 }
+
+export enum CountryCodeEnum {
+    IR = "IR"
+}
+
+export enum AccountCodeTypeEnum {
+    ZERO = "0",
+    ONE = "1",
+    TWO = "2",
+    THREE = "3",
+    FOUR = "4"
+}
+
+export enum AccountTypeEnum {
+    DEPOSIT_ACCOUNT = "deposit_account",
+    FACILITY_ACCOUNT = "facility_account",
+    INVESTMENT_DEPOSIT_ACCOUNT = "investment_deposit_account",
+    SAVINGS_ACCOUNT = "savings_account",
+    CHECKING_ACCOUNT = "checking account"
+}
