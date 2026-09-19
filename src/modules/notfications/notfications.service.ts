@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Notfications } from 'src/entity/notfication.entity';
 import { User } from 'src/entity/users.entity';
@@ -22,6 +22,21 @@ export class NotficationsService {
         const newNotfication = this.notficationRepo.create({ title, message, user: { id: userId }, userId });
         await this.notficationRepo.save(newNotfication);
         return;
+
+    }
+
+    async notficationForUsers (userIds: string[], title: string, message: string) {
+
+        const uniqueUserIds = [...new Set(userIds)];
+        if (uniqueUserIds.length === 0) throw new BadRequestException("No Reciever Found!");
+
+        const notfications = uniqueUserIds.map((userId) =>
+
+            this.notficationRepo.create({ title, message, user: { id: userId }, userId })
+
+        )
+
+        return this.notficationRepo.save(notfications);
 
     }
 
