@@ -16,6 +16,12 @@ export class RedisService {
 
     }
 
+    async set (key: string, value: string, ttl: number) {
+
+        return await this.cacheManager.set(key, value, ttl);
+
+    }
+
     async get (key: string) {
 
         return await this.cacheManager.get(key);
