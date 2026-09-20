@@ -5,11 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entity/users.entity';
 import { Documents } from 'src/entity/documents.entity';
 import { AdminModule } from '../admin/admin.module';
+import { NotficationsModule } from '../notfications/notfications.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Documents]),
-    AdminModule
+    AdminModule,
+    NotficationsModule
   ],
   controllers: [UsersController],
   providers: [UsersService],
