@@ -7,7 +7,8 @@ export enum UserRoleEnum {
 export enum WalletStatusEnum {
     Active = "active",
     Closed = "closed",
-    Blocked = "blocked"
+    Blocked = "blocked",
+    FREEZED = "freezed"
 }
 
 export enum TransactionStatusEnum { 
