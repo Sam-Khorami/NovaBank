@@ -7,9 +7,11 @@ import { existsSync, mkdirSync } from 'fs';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from "multer";
 import { extname } from "path";
+import { KycGuard } from 'src/common/guards/kyc.guard';
+import { KycOnly } from 'src/common/decorators/kyc.decorator';
 
 @ApiTags("Users Managment")
-@UseGuards(JwtAuthGuard, PermissionGuard)
+@UseGuards(JwtAuthGuard, PermissionGuard, KycGuard)
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
@@ -81,6 +83,7 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: "Get My Account Details", description: "With this api user can see its account details" })
+  @KycOnly()
   @Get("my-account-details")
   async getMyAccountDetails (@Req() request: Request) {
 
@@ -89,10 +92,20 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: "Get Balance", description: "User can get its balance with this endpoint" })
+  @KycOnly()
   @Get("get-balance")
   async getBalance (@Req() request: Request) {
 
     return await this.usersService.getBalance(request);
+
+  }
+
+  @ApiOperation({ summary: "First Deposit", description: "With this endpoint user can have its first deposit" })
+  @KycOnly()
+  @Post("wallet/first-deposit")
+  async firstDeposit (@Req() request: Request) {
+
+    return await this.usersService.firstDeposit(request);
 
   }
 
