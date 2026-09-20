@@ -6,6 +6,7 @@ import { User } from 'src/entity/users.entity';
 import { Repository } from 'typeorm';
 import { NotficationsService } from '../notfications/notfications.service';
 import { Wallet } from 'src/entity/wallet.entity';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class UsersService {
@@ -15,7 +16,8 @@ export class UsersService {
         @InjectRepository(User) private readonly userRepo: Repository<User>,
         @InjectRepository(Wallet) private readonly walletRepo: Repository<Wallet>,
         @InjectRepository(Documents) private readonly documentsRepo: Repository<Documents>,
-        private readonly notficationService: NotficationsService
+        private readonly notficationService: NotficationsService,
+        private readonly redisService: RedisService
 
     ) {}
 
@@ -51,6 +53,24 @@ export class UsersService {
         if (!wallet) throw new NotFoundException("The wallet not found!");
 
         return { wallet }
+
+    }
+
+    async getBalance (request: Request) {
+
+        const userId = request["user"].id;
+        const user = await this.userRepo.findOne({ where: { id: userId } });
+        if (!user) throw new NotFoundException("The user not found");
+
+        const balance = await this.redisService.get(`user:balance:${userId}`);
+        if (balance) return { balance }
+        
+        const wallet = await this.walletRepo.findOne({ where: { userId } });
+        if (!wallet) throw new BadRequestException("The wallet not found!");
+
+        await this.redisService.set(`user:balance:${userId}`, wallet.balance.toString(), 60000);
+        const redisBalance = await this.redisService.get(`user:balance:${userId}`);
+        return { redisBalance }
 
     }
 
