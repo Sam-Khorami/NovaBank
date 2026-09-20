@@ -40,4 +40,17 @@ export class NotficationsService {
 
     }
 
+    async getUnreadNotfications (request: Request) {
+
+        const userId = request["user"].id;
+        const user = await this.userRepo.findOne({ where: { id: userId } });
+        if (!user) throw new NotFoundException("The user not found!");
+
+        const notfications = await this.notficationRepo.find({ where: { userId, isRead: false } });
+        if (notfications.length === 0) throw new NotFoundException("You've got no notfications");
+
+        return { notfications }
+
+    }
+
 }
