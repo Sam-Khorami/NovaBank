@@ -5,6 +5,7 @@ import { Documents } from 'src/entity/documents.entity';
 import { User } from 'src/entity/users.entity';
 import { Repository } from 'typeorm';
 import { NotficationsService } from '../notfications/notfications.service';
+import { Wallet } from 'src/entity/wallet.entity';
 
 @Injectable()
 export class UsersService {
@@ -12,6 +13,7 @@ export class UsersService {
     constructor (
 
         @InjectRepository(User) private readonly userRepo: Repository<User>,
+        @InjectRepository(Wallet) private readonly walletRepo: Repository<Wallet>,
         @InjectRepository(Documents) private readonly documentsRepo: Repository<Documents>,
         private readonly notficationService: NotficationsService
 
@@ -36,6 +38,19 @@ export class UsersService {
 
         await this.notficationService.notficationForUser(user.id, "Request For Check Document", `Your request for checking document set`);
         return { message: "Your document uploaded and your request set" }
+
+    }
+
+    async getMyAccountDetails (request: Request) {
+
+        const userId = request["user"].id;
+        const user = await this.userRepo.findOne({ where: { id: userId } });
+        if (!user) throw new NotFoundException("The user not found");
+
+        const wallet = await this.walletRepo.findOne({ where: { userId }, select: { accountNumber: true, cardNumber: true, shabaNumber: true, balance: true, status: true, user: { phoneNumber: true, email: true } } });
+        if (!wallet) throw new NotFoundException("The wallet not found!");
+
+        return { wallet }
 
     }
 
