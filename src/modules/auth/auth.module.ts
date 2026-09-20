@@ -12,6 +12,7 @@ import { MailModule } from '../mail/mail.module';
 import { RedisModule } from '../redis/redis.module';
 import { Role } from 'src/entity/role.entity';
 import { Permission } from 'src/entity/permission.entity';
+import { NotficationsModule } from '../notfications/notfications.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { Permission } from 'src/entity/permission.entity';
     }),
     VitalRecordsModule,
     MailModule,
-    RedisModule
+    RedisModule,
+    NotficationsModule
 
   ],
   controllers: [AuthController],
