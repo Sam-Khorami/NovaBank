@@ -13,5 +13,6 @@ import { Notfications } from 'src/entity/notfication.entity';
   ],
   controllers: [NotficationsController],
   providers: [NotficationsService],
+  exports: [NotficationsService]
 })
 export class NotficationsModule {}
