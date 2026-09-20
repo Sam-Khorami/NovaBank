@@ -8,12 +8,14 @@ import { AdminModule } from '../admin/admin.module';
 import { NotficationsModule } from '../notfications/notfications.module';
 import { Wallet } from 'src/entity/wallet.entity';
 import { WalletTransaction } from 'src/entity/walletTransaction.entity';
+import { RedisModule } from '../redis/redis.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Documents, Wallet, WalletTransaction]),
     AdminModule,
-    NotficationsModule
+    NotficationsModule,
+    RedisModule
   ],
   controllers: [UsersController],
   providers: [UsersService],
