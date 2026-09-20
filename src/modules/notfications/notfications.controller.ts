@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseUUIDPipe, Patch, Query, Req, UseGuards } from '@nestjs/common';
 import { NotficationsService } from './notfications.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
@@ -25,6 +25,14 @@ export class NotficationsController {
   async getAllNotfications (@Req() request: Request, @Query() query: GetNotficationsDto) {
 
     return await this.notficationsService.getAllNotfications(request, query);
+
+  }
+
+  @ApiOperation({ summary: "Read A Notfication", description: "With this api user can read a notfication" })
+  @Patch("read/:notficationId")
+  async readNotfication (@Req() request: Request, @Param("notficationId", ParseUUIDPipe) notficationId: string) {
+
+    return await this.notficationsService.readNotfication(request, notficationId);
 
   }
 
