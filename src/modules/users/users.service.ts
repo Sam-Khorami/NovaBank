@@ -96,6 +96,7 @@ export class UsersService {
         await this.walletTransactionRepo.save(newTransaction);
 
         await this.walletRepo.save(wallet);
+        await this.notficationService.notficationForUser(user.id, "First Deposit", `The first deposit has been made and 10000 toman were added to your wallet`);
         return { message: "The deposit to your account was successfull" }
 
     }
