@@ -1,7 +1,8 @@
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
 import { NotficationsService } from './notfications.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
+import { GetNotficationsDto } from './dto/getNotfication.dto';
 
 @ApiTags("Notfications Management")
 @ApiBearerAuth()
@@ -16,6 +17,14 @@ export class NotficationsController {
   async getUnreadNotfications (@Req() request: Request) {
 
     return await this.notficationsService.getUnreadNotfications(request);
+
+  }
+
+  @ApiOperation({ summary: "Get All Notfications", description: "With this api user can get all its notfications" })
+  @Get("all")
+  async getAllNotfications (@Req() request: Request, @Query() query: GetNotficationsDto) {
+
+    return await this.notficationsService.getAllNotfications(request, query);
 
   }
 
