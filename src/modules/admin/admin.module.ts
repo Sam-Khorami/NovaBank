@@ -8,11 +8,13 @@ import { Permission } from 'src/entity/permission.entity';
 import { Documents } from 'src/entity/documents.entity';
 import { Wallet } from 'src/entity/wallet.entity';
 import { WalletTransaction } from 'src/entity/walletTransaction.entity';
+import { NotficationsModule } from '../notfications/notfications.module';
 
 @Module({
   imports: [
 
-    TypeOrmModule.forFeature([User, Role, Permission, Documents, Wallet, WalletTransaction])
+    TypeOrmModule.forFeature([User, Role, Permission, Documents, Wallet, WalletTransaction]),
+    NotficationsModule
 
   ],
   controllers: [AdminController],
