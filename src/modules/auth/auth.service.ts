@@ -18,6 +18,7 @@ import { Permission } from 'src/entity/permission.entity';
 import { LoginDto } from './dto/login.dto';
 import { ForgetPasswordDto } from './dto/forgetPassword.dto';
 import { VerifyChangePasswordDto } from './dto/verifyChangePassword.dto';
+import { NotficationsService } from '../notfications/notfications.service';
 
 @Injectable()
 export class AuthService {
@@ -31,7 +32,8 @@ export class AuthService {
         private readonly vitalRecordsService: VitalRecordsService,
         private readonly redisService: RedisService,
         private readonly mailService: MailService,
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
+        private readonly notficationService: NotficationsService
 
     ) {}
 
@@ -120,6 +122,7 @@ export class AuthService {
 
         })
 
+        await this.notficationService.notficationForUser(user.id, "Success Login", `Welcome, New experience with novabank!`);
         return { message: "Welcome, You are login now", accessToken }
 
     }
@@ -136,6 +139,8 @@ export class AuthService {
 
         const newHashedPassword = await bcrypt.hash(data.newPassword, 12);
         await this.userRepo.update({ id: userId }, { password: newHashedPassword });
+
+        await this.notficationService.notficationForUser(user.id, "Success Change Password", `Your password has changed successfully!`);
         return { message: "Your password changed successfully!" }
 
     }
@@ -165,6 +170,8 @@ export class AuthService {
 
         const hashedPassword = await bcrypt.hash(data.newPassword, 12);
         await this.userRepo.update({ phoneNumber: data.phoneNumber }, { password: hashedPassword });
+
+        await this.notficationService.notficationForUser(user.id, "Success Change Password", `Your password has changed successfully!`);
         return { message: "Your new password set successfully!" }
 
     }
