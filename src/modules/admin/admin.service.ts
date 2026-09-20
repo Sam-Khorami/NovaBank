@@ -8,7 +8,7 @@ import { AddRoleDto } from './dto/addRole.dto';
 import { Role } from 'src/entity/role.entity';
 import { GetUsersDto } from './dto/getUsers.dto';
 import { Documents } from 'src/entity/documents.entity';
-import { DocumentStatusEnum, KycStatusEnum } from 'src/common/types/entities.enum';
+import { DocumentStatusEnum, KycStatusEnum, WalletStatusEnum } from 'src/common/types/entities.enum';
 import { GetUserKycStatusDto } from './dto/getUserKycStatus.dto';
 import { GetDocumentStatusDto } from './dto/getDocumentStatus.dto';
 import { Wallet } from 'src/entity/wallet.entity';
@@ -315,6 +315,32 @@ export class AdminService {
         return { message: "The document rejected successfully" }
 
     }
+
+    async freezeAccount (userId: string) {
+
+        const wallet = await this.walletRepo.findOne({ where: { userId } });
+        if (!wallet) throw new NotFoundException("The wallet not found!");
+
+        if (wallet.status === WalletStatusEnum.FREEZED) throw new BadRequestException("The wallet is freeze already");
+        wallet.status = WalletStatusEnum.FREEZED;
+
+        await this.walletRepo.save(wallet);
+        return { message: "The account made freeze" }
+
+    }
+
+    // async unFreezeAccount (userId: string) {
+
+    //     const wallet = await this.walletRepo.findOne({ where: { userId } });
+    //     if (!wallet) throw new NotFoundException("The wallet not found!");
+
+    //     if (wallet.status !== WalletStatusEnum.FREEZED) throw new BadRequestException("The wallet is not freeze");
+    //     wallet.status = WalletStatusEnum.Active;
+
+    //     await this.walletRepo.save(wallet);
+    //     return { message: "The account made unfreeze" }
+
+    // }
 
     async getUsers (query: GetUsersDto) {
 
