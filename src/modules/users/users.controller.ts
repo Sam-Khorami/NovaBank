@@ -88,5 +88,13 @@ export class UsersController {
     
   }
 
+  @ApiOperation({ summary: "Get Balance", description: "User can get its balance with this endpoint" })
+  @Get("get-balance")
+  async getBalance (@Req() request: Request) {
+
+    return await this.usersService.getBalance(request);
+
+  }
+
 
 }
