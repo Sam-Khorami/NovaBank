@@ -28,6 +28,14 @@ export class NotficationsController {
 
   }
 
+  @ApiOperation({ summary: "Read All Notfication", description: "With this api user can read all notfications" })
+  @Patch("read/all")
+  async readAllNotfication (@Req() request: Request) {
+
+    return await this.notficationsService.readAllNotfication(request);
+
+  }
+
   @ApiOperation({ summary: "Read A Notfication", description: "With this api user can read a notfication" })
   @Patch("read/:notficationId")
   async readNotfication (@Req() request: Request, @Param("notficationId", ParseUUIDPipe) notficationId: string) {
