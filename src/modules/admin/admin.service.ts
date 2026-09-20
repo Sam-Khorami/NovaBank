@@ -329,18 +329,18 @@ export class AdminService {
 
     }
 
-    // async unFreezeAccount (userId: string) {
+    async unFreezeAccount (userId: string) {
 
-    //     const wallet = await this.walletRepo.findOne({ where: { userId } });
-    //     if (!wallet) throw new NotFoundException("The wallet not found!");
+        const wallet = await this.walletRepo.findOne({ where: { userId } });
+        if (!wallet) throw new NotFoundException("The wallet not found!");
 
-    //     if (wallet.status !== WalletStatusEnum.FREEZED) throw new BadRequestException("The wallet is not freeze");
-    //     wallet.status = WalletStatusEnum.Active;
+        if (wallet.status !== WalletStatusEnum.FREEZED) throw new BadRequestException("The wallet is not freeze");
+        wallet.status = WalletStatusEnum.Active;
 
-    //     await this.walletRepo.save(wallet);
-    //     return { message: "The account made unfreeze" }
+        await this.walletRepo.save(wallet);
+        return { message: "The account made unfreeze" }
 
-    // }
+    }
 
     async getUsers (query: GetUsersDto) {
 
