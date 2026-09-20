@@ -4,6 +4,7 @@ import { KycStatusEnum } from 'src/common/types/entities.enum';
 import { Documents } from 'src/entity/documents.entity';
 import { User } from 'src/entity/users.entity';
 import { Repository } from 'typeorm';
+import { NotficationsService } from '../notfications/notfications.service';
 
 @Injectable()
 export class UsersService {
@@ -11,7 +12,8 @@ export class UsersService {
     constructor (
 
         @InjectRepository(User) private readonly userRepo: Repository<User>,
-        @InjectRepository(Documents) private readonly documentsRepo: Repository<Documents>
+        @InjectRepository(Documents) private readonly documentsRepo: Repository<Documents>,
+        private readonly notficationService: NotficationsService
 
     ) {}
 
@@ -31,6 +33,8 @@ export class UsersService {
 
         await this.documentsRepo.save(newDocument);
         await this.userRepo.save(user);
+
+        await this.notficationService.notficationForUser(user.id, "Request For Check Document", `Your request for checking document set`);
         return { message: "Your document uploaded and your request set" }
 
     }
