@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { NotficationsService } from '../notfications/notfications.service';
 import { Wallet } from 'src/entity/wallet.entity';
 import { RedisService } from '../redis/redis.service';
+import { WalletTransaction } from 'src/entity/walletTransaction.entity';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +17,7 @@ export class UsersService {
         @InjectRepository(User) private readonly userRepo: Repository<User>,
         @InjectRepository(Wallet) private readonly walletRepo: Repository<Wallet>,
         @InjectRepository(Documents) private readonly documentsRepo: Repository<Documents>,
+        @InjectRepository(WalletTransaction) private readonly walletTransactionRepo: Repository<WalletTransaction>,
         private readonly notficationService: NotficationsService,
         private readonly redisService: RedisService
 
@@ -70,7 +72,31 @@ export class UsersService {
 
         await this.redisService.set(`user:balance:${userId}`, wallet.balance.toString(), 60000);
         const redisBalance = await this.redisService.get(`user:balance:${userId}`);
-        return { redisBalance }
+        return { balance: redisBalance }
+
+    }
+
+    async firstDeposit (request: Request) {
+
+        const userId = request["user"].id;
+        const user = await this.userRepo.findOne({ where: { id: userId } });
+        if (!user) throw new NotFoundException("The user not found");
+
+        const walletTransaction = await this.walletTransactionRepo.findOne({ where: { userId } });
+        if (walletTransaction) throw new BadRequestException("You are not able to have any first deposit, you've done it once");
+
+        const wallet = await this.walletRepo.findOne({ where: { userId } });
+        if (!wallet) throw new BadRequestException("The wallet not found!");
+
+        const previousBalance = Number(wallet.balance);
+        const newBalance = Number(previousBalance + 10000);
+        wallet.balance = newBalance;
+
+        const newTransaction = this.walletTransactionRepo.create({ amount: 10000, balanceBefore: previousBalance, balanceAfter: newBalance, wallet: { id: wallet.id }, walletId: wallet.id, user: { id: userId }, userId });
+        await this.walletTransactionRepo.save(newTransaction);
+
+        await this.walletRepo.save(wallet);
+        return { message: "The deposit to your account was successfull" }
 
     }
 
