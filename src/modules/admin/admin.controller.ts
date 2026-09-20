@@ -173,6 +173,22 @@ export class AdminController {
 
   }
 
+  @ApiOperation({ summary: "Freeze Account", description: "With this api admin can freeze a wallet to stop any transaction for that user" })
+  @Patch("freeze-account/:userId")
+  async freezeAccount (@Param("userId", ParseUUIDPipe) userId: string) {
+
+    return await this.adminService.freezeAccount(userId);
+
+  }
+
+  // @ApiOperation({ summary: "Unfreeze Account", description: "With this api admin can unfreeze a wallet" })
+  // @Patch("unfreeze-account/:userId")
+  // async unfreezeAccount (@Param("userId", ParseUUIDPipe) userId: string) {
+
+  //   return await this.adminService.unFreezeAccount(userId);
+
+  // }
+
   @ApiOperation({ summary: "Get Users", description: "With this api admin can get users list" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_GET_USERS)
   @Get("users")
