@@ -12,6 +12,7 @@ import { DocumentStatusEnum, KycStatusEnum } from 'src/common/types/entities.enu
 import { GetUserKycStatusDto } from './dto/getUserKycStatus.dto';
 import { GetDocumentStatusDto } from './dto/getDocumentStatus.dto';
 import { Wallet } from 'src/entity/wallet.entity';
+import { NotficationsService } from '../notfications/notfications.service';
 
 @Injectable()
 export class AdminService {
@@ -23,7 +24,8 @@ export class AdminService {
         @InjectRepository(Documents) private readonly documentsRepo: Repository<Documents>,
         @InjectRepository(Wallet) private readonly walletRepo: Repository<Wallet>,
         @InjectRepository(Permission) private readonly permissionRepo: Repository<Permission>,
-        private readonly dataSource: DataSource
+        private readonly dataSource: DataSource,
+        private readonly notficationService: NotficationsService
 
     ) {}
 
@@ -283,8 +285,10 @@ export class AdminService {
             await documentsRepo.save(document);
             await userRepo.save(user);
             await walletRepo.save(wallet);
+            await this.notficationService.notficationForUser(user.id, "Accept Kyc", `Your request for kyc confirmed`);
 
         })
+
 
         return { message: "The document approved successfully and account created successfully!" }
 
@@ -306,6 +310,7 @@ export class AdminService {
 
         await this.documentsRepo.save(document);
         await this.userRepo.save(user);
+        await this.notficationService.notficationForUser(user.id, "Accept Kyc", `Your request for kyc rejected`);
 
         return { message: "The document rejected successfully" }
 
