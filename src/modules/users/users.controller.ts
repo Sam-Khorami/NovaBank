@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
@@ -79,5 +79,14 @@ export class UsersController {
     return await this.usersService.uploadDocument(image, request);
 
   }
+
+  @ApiOperation({ summary: "Get My Account Details", description: "With this api user can see its account details" })
+  @Get("my-account-details")
+  async getMyAccountDetails (@Req() request: Request) {
+
+    return await this.usersService.getMyAccountDetails(request);
+    
+  }
+
 
 }
