@@ -2,7 +2,8 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { Notfications } from 'src/entity/notfication.entity';
 import { User } from 'src/entity/users.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
+import { GetNotficationsDto } from './dto/getNotfication.dto';
 
 @Injectable()
 export class NotficationsService {
@@ -50,6 +51,19 @@ export class NotficationsService {
         if (notfications.length === 0) throw new NotFoundException("You've got no notfications");
 
         return { notfications }
+
+    }
+
+    async getAllNotfications (request: Request, query: GetNotficationsDto) {
+
+        const offset = (query.page - 1) * query.limit;
+        const where: FindOptionsWhere<Notfications> = {};
+
+        if (query.isRead) where.isRead = query.isRead;
+
+        const [notfications, total] = await this.notficationRepo.findAndCount({ where, skip: offset, take: query.limit, order: { id: "ASC" } });
+
+        return { data: notfications, pagination: { page: query.page, limit: query.limit, total } }
 
     }
 
