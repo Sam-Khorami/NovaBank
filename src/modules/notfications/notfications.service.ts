@@ -56,14 +56,35 @@ export class NotficationsService {
 
     async getAllNotfications (request: Request, query: GetNotficationsDto) {
 
+        const userId = request["user"].id;
+        const user = await this.userRepo.findOne({ where: { id: userId } });
+        if (!user) throw new NotFoundException("The user not found!");
+
         const offset = (query.page - 1) * query.limit;
         const where: FindOptionsWhere<Notfications> = {};
 
         if (query.isRead) where.isRead = query.isRead;
+        where.userId = userId;
 
         const [notfications, total] = await this.notficationRepo.findAndCount({ where, skip: offset, take: query.limit, order: { id: "ASC" } });
 
         return { data: notfications, pagination: { page: query.page, limit: query.limit, total } }
+
+    }
+
+    async readNotfication (request: Request, notficationId: string) {
+
+        const userId = request["user"].id;
+        const user = await this.userRepo.findOne({ where: { id: userId } });
+        if (!user) throw new NotFoundException("The user not found!");
+
+        const notfication = await this.notficationRepo.findOne({ where: { id: notficationId } });
+        if (!notfication) throw new NotFoundException("The notfication not found!");
+        if (notfication.userId !== userId) throw new NotFoundException("The notfication not found!");
+
+        notfication.isRead = true;
+        await this.notficationRepo.save(notfication);
+        return { message: "The notfication read successfully!" }
 
     }
 
