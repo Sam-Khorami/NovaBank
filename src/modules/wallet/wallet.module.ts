@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entity/users.entity';
 import { Wallet } from 'src/entity/wallet.entity';
 import { WalletTransaction } from 'src/entity/walletTransaction.entity';
-import { Idempotency } from 'src/entity/Idempotency.entity';
+import { Idempotency } from 'src/entity/idempotency.entity';
 import { Transfers } from 'src/entity/transfers.entity';
 
 @Module({
