@@ -1,6 +1,7 @@
 import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./users.entity";
 import { Transfers } from "./transfers.entity";
+import { IdempotencyStatusEnum } from "src/common/types/entities.enum";
 
 
 @Entity("idempotency")
@@ -12,6 +13,9 @@ export class Idempotency {
     @Index({ unique: true })
     @Column({ type: "varchar", nullable: false })
     key: string;
+
+    @Column({ type: "enum", enum: IdempotencyStatusEnum, nullable: false, default: IdempotencyStatusEnum.PENDING })
+    status: IdempotencyStatusEnum;
 
     @ManyToOne(() => User, (user) => user.idempotencies, { onDelete: "CASCADE" })
     user: User;
