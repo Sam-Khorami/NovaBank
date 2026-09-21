@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { TransferByCardNumberDto } from './dto/transferByCardNumber.dto';
 import { DataSource } from "typeorm";
 import { IdempotencyStatusEnum, KycStatusEnum, TransactionTypeEnum, WalletStatusEnum } from 'src/common/types/entities.enum';
+import { NotficationsService } from '../notfications/notfications.service';
 
 @Injectable()
 export class WalletService {
@@ -20,7 +21,8 @@ export class WalletService {
         @InjectRepository(WalletTransaction) private readonly transactionRepo: Repository<WalletTransaction>,
         @InjectRepository(Idempotency) private readonly idempotencyRepo: Repository<Idempotency>,
         @InjectRepository(Transfers) private readonly transfersRepo: Repository<Transfers>,
-        private readonly dataSource: DataSource
+        private readonly dataSource: DataSource,
+        private readonly notficationService: NotficationsService
 
     ) {}
 
@@ -66,8 +68,10 @@ export class WalletService {
             // Create Transaction For Sender & Save Changes
             senderWallet.balance = newSenderBalance;
             const newSenderTransaction = transactionRepo.create({ balanceBefore: previousSenderBalance, balanceAfter: newSenderBalance, amount: data.amount, type: TransactionTypeEnum.WITHDRAW, wallet: { id: senderWallet.id }, walletId: senderWallet.id, user: { id: senderId }, userId: senderId });
+            
             await transactionRepo.save(newSenderTransaction);
             await walletRepo.save(senderWallet);
+            await this.notficationService.notficationForUser(senderId, "Withdrawal", `The amount of ${data.amount} toman withdraw from your account`);
 
             // Getting Previous & New Receiver Balance
             const previousReceiverBalance = Number(receiverWallet.balance);
@@ -76,8 +80,10 @@ export class WalletService {
             // Create Transaction For Receiver & Save Changes
             receiverWallet.balance = newReceiverBalance;
             const newReceiverTransaction = transactionRepo.create({ balanceBefore: previousReceiverBalance, balanceAfter: newReceiverBalance, amount: data.amount, type: TransactionTypeEnum.DEPOSIT, wallet: { id: receiverWallet.id }, walletId: receiverWallet.id, user: { id: receiver.id }, userId: receiver.id });
+
             await transactionRepo.save(newReceiverTransaction);
             await walletRepo.save(receiverWallet);
+            await this.notficationService.notficationForUser(receiver.id, "Withdrawal", `The amount of ${data.amount} toman deposit to your account`);
 
             // Transfer Created & Save Changes
             const newTransfer = transfersRepo.create({ amount: data.amount, sender, senderId, receiver, receiverId: receiver.id });
