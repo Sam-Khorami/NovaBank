@@ -64,3 +64,8 @@ export enum AccountTypeEnum {
     THREE_SAVINGS_ACCOUNT = "savings_account",
     FOUR_CHECKING_ACCOUNT = "checking account"
 }
+
+export enum IdempotencyStatusEnum {
+    COMPLETED = "completed",
+    PENDING = "pending"
+}
