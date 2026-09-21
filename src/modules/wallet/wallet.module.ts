@@ -7,11 +7,13 @@ import { Wallet } from 'src/entity/wallet.entity';
 import { WalletTransaction } from 'src/entity/walletTransaction.entity';
 import { Idempotency } from 'src/entity/idempotency.entity';
 import { Transfers } from 'src/entity/transfers.entity';
+import { NotficationsModule } from '../notfications/notfications.module';
 
 @Module({
   imports: [
 
-    TypeOrmModule.forFeature([User, Wallet, WalletTransaction, Idempotency, Transfers])
+    TypeOrmModule.forFeature([User, Wallet, WalletTransaction, Idempotency, Transfers]),
+    NotficationsModule
 
   ],
   controllers: [WalletController],
