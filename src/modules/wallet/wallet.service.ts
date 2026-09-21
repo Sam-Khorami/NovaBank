@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Idempotency } from 'src/entity/Idempotency.entity';
+import { Idempotency } from 'src/entity/idempotency.entity';
 import { Transfers } from 'src/entity/transfers.entity';
 import { User } from 'src/entity/users.entity';
 import { Wallet } from 'src/entity/wallet.entity';
