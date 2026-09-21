@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, Index, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./users.entity";
-import { Idempotency } from "./Idempotency.entity";
+import { Idempotency } from "./idempotency.entity";
 
 
 @Entity("transfers")
