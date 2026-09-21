@@ -10,6 +10,7 @@ import { TransferByCardNumberDto } from './dto/transferByCardNumber.dto';
 import { DataSource } from "typeorm";
 import { IdempotencyStatusEnum, KycStatusEnum, TransactionTypeEnum, WalletStatusEnum } from 'src/common/types/entities.enum';
 import { NotficationsService } from '../notfications/notfications.service';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class WalletService {
@@ -22,7 +23,8 @@ export class WalletService {
         @InjectRepository(Idempotency) private readonly idempotencyRepo: Repository<Idempotency>,
         @InjectRepository(Transfers) private readonly transfersRepo: Repository<Transfers>,
         private readonly dataSource: DataSource,
-        private readonly notficationService: NotficationsService
+        private readonly notficationService: NotficationsService,
+        private readonly mailService: MailService
 
     ) {}
 
@@ -71,7 +73,10 @@ export class WalletService {
             
             await transactionRepo.save(newSenderTransaction);
             await walletRepo.save(senderWallet);
+            
+            // Sender Notfications
             await this.notficationService.notficationForUser(senderId, "Withdrawal", `The amount of ${data.amount} toman withdraw from your account`);
+            await this.mailService.sendMailToUser(sender.email, "Withdrawal", `The amount of ${data.amount} toman withdraw from your account`);
 
             // Getting Previous & New Receiver Balance
             const previousReceiverBalance = Number(receiverWallet.balance);
@@ -83,7 +88,10 @@ export class WalletService {
 
             await transactionRepo.save(newReceiverTransaction);
             await walletRepo.save(receiverWallet);
-            await this.notficationService.notficationForUser(receiver.id, "Withdrawal", `The amount of ${data.amount} toman deposit to your account`);
+
+            // Receiver Notfications
+            await this.notficationService.notficationForUser(receiver.id, "Deposit", `The amount of ${data.amount} toman deposit to your account`);
+            await this.mailService.sendMailToUser(receiver.email, "Deposit", `The amount of ${data.amount} toman deposit to your account`);
 
             // Transfer Created & Save Changes
             const newTransfer = transfersRepo.create({ amount: data.amount, sender, senderId, receiver, receiverId: receiver.id });
