@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Idempotency } from 'src/entity/idempotency.entity';
 import { Transfers } from 'src/entity/transfers.entity';
@@ -32,7 +32,7 @@ export class WalletService {
         
         if (!idempotencyKey) throw new BadRequestException("The idempotency key is requiered!");
         
-        await this.dataSource.transaction(async (manager) => {
+        const result = await this.dataSource.transaction(async (manager) => {
             
             // Getting Repositories
             const walletRepo = manager.getRepository(Wallet);
@@ -45,10 +45,10 @@ export class WalletService {
             const senderId = request["user"].id;
             const sender = await userRepo.findOne({ where: { id: senderId } });
             if (!sender) throw new NotFoundException("The user not found!");
-    
+            
             // Checking Idempotency Key
             const checkIdempotency = await idempotencyRepo.findOne({ where: { userId: senderId, key: idempotencyKey } });
-            if (checkIdempotency) return { message: "The transfer payment was successfully completed" }
+            if (checkIdempotency) throw new ConflictException("The transfer payment was successfully completed");
     
             // Getting Receiver Wallet
             const receiverWallet = await walletRepo.findOne({ where: { cardNumber: data.receiverCardNumber, status: WalletStatusEnum.Active } });
@@ -62,7 +62,8 @@ export class WalletService {
             const senderWallet = await walletRepo.findOne({ where: { userId: senderId, status: WalletStatusEnum.Active } });
             if (!senderWallet) throw new NotFoundException("The sender wallet not found!");
             if (senderWallet.balance <= data.amount) throw new BadRequestException("The balance is not enough for this operation");
-            
+            if (senderWallet.cardNumber === data.receiverCardNumber) throw new BadRequestException("The operation is impossible");
+
             // Getting Previous & New Sender Balance
             const previousSenderBalance = Number(senderWallet.balance);
             const newSenderBalance = Number(previousSenderBalance - data.amount);
@@ -74,35 +75,37 @@ export class WalletService {
             await transactionRepo.save(newSenderTransaction);
             await walletRepo.save(senderWallet);
             
-            // Sender Notfications
-            await this.notficationService.notficationForUser(senderId, "Withdrawal", `The amount of ${data.amount} toman withdraw from your account`);
-            await this.mailService.sendMailToUser(sender.email, "Withdrawal", `The amount of ${data.amount} toman withdraw from your account`);
-
             // Getting Previous & New Receiver Balance
             const previousReceiverBalance = Number(receiverWallet.balance);
             const newReceiverBalance = Number(previousReceiverBalance + data.amount);
-
+            
             // Create Transaction For Receiver & Save Changes
             receiverWallet.balance = newReceiverBalance;
             const newReceiverTransaction = transactionRepo.create({ balanceBefore: previousReceiverBalance, balanceAfter: newReceiverBalance, amount: data.amount, type: TransactionTypeEnum.DEPOSIT, wallet: { id: receiverWallet.id }, walletId: receiverWallet.id, user: { id: receiver.id }, userId: receiver.id });
-
+            
             await transactionRepo.save(newReceiverTransaction);
             await walletRepo.save(receiverWallet);
-
-            // Receiver Notfications
-            await this.notficationService.notficationForUser(receiver.id, "Deposit", `The amount of ${data.amount} toman deposit to your account`);
-            await this.mailService.sendMailToUser(receiver.email, "Deposit", `The amount of ${data.amount} toman deposit to your account`);
-
+            
             // Transfer Created & Save Changes
             const newTransfer = transfersRepo.create({ amount: data.amount, sender, senderId, receiver, receiverId: receiver.id });
             await transfersRepo.save(newTransfer);
-
+            
             // Idempotency Created & Save Changes
             const newIdempotency = idempotencyRepo.create({ key: idempotencyKey, status: IdempotencyStatusEnum.COMPLETED, user: { id: senderId }, userId: senderId, transfer: { id: newTransfer.id }, transferId: newTransfer.id });
             await idempotencyRepo.save(newIdempotency);
+            
+            return { receiver, sender }
 
         })
 
+        // Sender Notfications
+        await this.notficationService.notficationForUser(result.sender.id, "Withdrawal", `The amount of ${data.amount} toman withdraw from your account`);
+        await this.mailService.sendMailToUser(result.sender.email, "Withdrawal", `The amount of ${data.amount} toman withdraw from your account`);
+        
+        // Receiver Notfications
+        await this.notficationService.notficationForUser(result.receiver.id, "Deposit", `The amount of ${data.amount} toman deposit to your account`);
+        await this.mailService.sendMailToUser(result.receiver.email, "Deposit", `The amount of ${data.amount} toman deposit to your account`);
+        
         return { message: "The transfer payment was successfully completed" }
 
     }
