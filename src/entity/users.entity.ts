@@ -7,6 +7,7 @@ import { Role } from "./role.entity";
 import { Permission } from "./permission.entity";
 import { Documents } from "./documents.entity";
 import { Notfications } from "./notfication.entity";
+import { Transfers } from "./transfers.entity";
 
 
 @Entity("users")
@@ -70,6 +71,12 @@ export class User {
 
     @OneToMany(() => Notfications, (notfications) => notfications.user)
     notfications: Notfications[];
+
+    @OneToMany(() => Transfers, (transfers) => transfers.sender)
+    senders: Transfers[];
+
+    @OneToMany(() => Transfers, (transfers) => transfers.receiver)
+    receivers: Transfers[];
 
     @BeforeInsert()
     async hashPassword () {
