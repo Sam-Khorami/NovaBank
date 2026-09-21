@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./users.entity";
+import { Idempotency } from "./Idempotency.entity";
 
 
 @Entity("transfers")
@@ -24,6 +25,9 @@ export class Transfers {
     @Index()
     @Column({ type: "uuid" })
     receiverId: string;
+
+    @OneToMany(() => Idempotency, (idempotencies) => idempotencies.transfers)
+    idempotencies: Idempotency[];
 
     @CreateDateColumn()
     createdAt: Date;
