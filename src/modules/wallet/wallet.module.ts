@@ -8,12 +8,14 @@ import { WalletTransaction } from 'src/entity/walletTransaction.entity';
 import { Idempotency } from 'src/entity/idempotency.entity';
 import { Transfers } from 'src/entity/transfers.entity';
 import { NotficationsModule } from '../notfications/notfications.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
 
     TypeOrmModule.forFeature([User, Wallet, WalletTransaction, Idempotency, Transfers]),
-    NotficationsModule
+    NotficationsModule,
+    MailModule
 
   ],
   controllers: [WalletController],
