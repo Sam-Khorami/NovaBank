@@ -8,6 +8,9 @@ export class Transfers {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
+    @Column({ type: 'numeric', precision: 20, scale: 8, nullable: false })
+    amount: number;
+
     @ManyToOne(() => User, (user) => user.senders, { onDelete: "CASCADE" })
     sender: User;
 
