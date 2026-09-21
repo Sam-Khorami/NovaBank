@@ -4,13 +4,13 @@ import { Transfers } from "./transfers.entity";
 import { IdempotencyStatusEnum } from "src/common/types/entities.enum";
 
 
+@Index(['userId', 'key'], { unique: true })
 @Entity("idempotency")
 export class Idempotency {
 
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Index({ unique: true })
     @Column({ type: "varchar", nullable: false })
     key: string;
 
