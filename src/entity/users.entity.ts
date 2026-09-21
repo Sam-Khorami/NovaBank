@@ -8,7 +8,7 @@ import { Permission } from "./permission.entity";
 import { Documents } from "./documents.entity";
 import { Notfications } from "./notfication.entity";
 import { Transfers } from "./transfers.entity";
-import { Idempotency } from "./Idempotency.entity";
+import { Idempotency } from "./idempotency.entity";
 
 
 @Entity("users")
