@@ -26,7 +26,7 @@ export class Transfers {
     @Column({ type: "uuid" })
     receiverId: string;
 
-    @OneToMany(() => Idempotency, (idempotencies) => idempotencies.transfers)
+    @OneToMany(() => Idempotency, (idempotencies) => idempotencies.transfer)
     idempotencies: Idempotency[];
 
     @CreateDateColumn()
