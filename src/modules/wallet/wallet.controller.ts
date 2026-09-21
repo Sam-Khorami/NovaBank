@@ -1,4 +1,4 @@
-import { Controller, UseGuards } from '@nestjs/common';
+import { Controller, Headers, Post, UseGuards } from '@nestjs/common';
 import { WalletService } from './wallet.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
@@ -13,5 +13,12 @@ import { KycOnly } from 'src/common/decorators/kyc.decorator';
 export class WalletController {
   
   constructor(private readonly walletService: WalletService) {}
+
+  @Post("transfer")
+  async transfer (@Headers("idempotency-key") key: string) {
+
+    return key;
+
+  }
 
 }
