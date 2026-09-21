@@ -16,6 +16,7 @@ import KeyvRedis from '@keyv/redis';
 import { AdminModule } from './modules/admin/admin.module';
 import { UsersModule } from './modules/users/users.module';
 import { NotficationsModule } from './modules/notfications/notfications.module';
+import { WalletModule } from './modules/wallet/wallet.module';
 
 @Module({
   imports: [
@@ -42,7 +43,8 @@ import { NotficationsModule } from './modules/notfications/notfications.module';
     RedisModule,
     AdminModule,
     UsersModule,
-    NotficationsModule
+    NotficationsModule,
+    WalletModule
 
   ],
   controllers: [AppController],
