@@ -25,8 +25,8 @@ export class Idempotency {
     @Column({ type: "uuid" })
     userId: string;
 
-    @ManyToOne(() => Transfers, (transfers) => transfers.idempotencies, { onDelete: "CASCADE" })
-    transfers: Transfers;
+    @ManyToOne(() => Transfers, (transfer) => transfer.idempotencies, { onDelete: "CASCADE" })
+    transfer: Transfers;
 
     @Index()
     @Column({ type: "uuid" })
