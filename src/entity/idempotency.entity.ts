@@ -14,6 +14,7 @@ export class Idempotency {
     @Column({ type: "varchar", nullable: false })
     key: string;
 
+    @Index()
     @Column({ type: "enum", enum: IdempotencyStatusEnum, nullable: false, default: IdempotencyStatusEnum.PENDING })
     status: IdempotencyStatusEnum;
 
