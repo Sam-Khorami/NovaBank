@@ -11,6 +11,7 @@ import { DataSource } from "typeorm";
 import { IdempotencyStatusEnum, KycStatusEnum, TransactionTypeEnum, WalletStatusEnum } from 'src/common/types/entities.enum';
 import { NotficationsService } from '../notfications/notfications.service';
 import { MailService } from '../mail/mail.service';
+import { Decimal } from "decimal.js";
 
 @Injectable()
 export class WalletService {
@@ -61,33 +62,37 @@ export class WalletService {
             // Getting Sender Wallet
             const senderWallet = await walletRepo.findOne({ where: { userId: senderId, status: WalletStatusEnum.Active } });
             if (!senderWallet) throw new NotFoundException("The sender wallet not found!");
-            if (senderWallet.balance <= data.amount) throw new BadRequestException("The balance is not enough for this operation");
+            
+            // Cheking The Balance
+            const amount = new Decimal(data.amount);
+            const previousSenderBalance = new Decimal(senderWallet.balance);
+
+            if (previousSenderBalance.lessThan(amount)) throw new BadRequestException("The balance is not enough for this operation");
             if (senderWallet.cardNumber === data.receiverCardNumber) throw new BadRequestException("The operation is impossible");
 
             // Getting Previous & New Sender Balance
-            const previousSenderBalance = Number(senderWallet.balance);
-            const newSenderBalance = Number(previousSenderBalance - data.amount);
+            const newSenderBalance = previousSenderBalance.minus(amount);
 
             // Create Transaction For Sender & Save Changes
-            senderWallet.balance = newSenderBalance;
-            const newSenderTransaction = transactionRepo.create({ balanceBefore: previousSenderBalance, balanceAfter: newSenderBalance, amount: data.amount, type: TransactionTypeEnum.WITHDRAW, wallet: { id: senderWallet.id }, walletId: senderWallet.id, user: { id: senderId }, userId: senderId });
+            senderWallet.balance = newSenderBalance.toFixed(8);
+            const newSenderTransaction = transactionRepo.create({ balanceBefore: previousSenderBalance.toFixed(8), balanceAfter: newSenderBalance.toFixed(8), amount: amount.toFixed(8), type: TransactionTypeEnum.WITHDRAW, wallet: { id: senderWallet.id }, walletId: senderWallet.id, user: { id: senderId }, userId: senderId });
             
             await transactionRepo.save(newSenderTransaction);
             await walletRepo.save(senderWallet);
             
             // Getting Previous & New Receiver Balance
-            const previousReceiverBalance = Number(receiverWallet.balance);
-            const newReceiverBalance = Number(previousReceiverBalance + data.amount);
+            const previousReceiverBalance = new Decimal(receiverWallet.balance);
+            const newReceiverBalance = previousReceiverBalance.plus(amount);
             
             // Create Transaction For Receiver & Save Changes
-            receiverWallet.balance = newReceiverBalance;
-            const newReceiverTransaction = transactionRepo.create({ balanceBefore: previousReceiverBalance, balanceAfter: newReceiverBalance, amount: data.amount, type: TransactionTypeEnum.DEPOSIT, wallet: { id: receiverWallet.id }, walletId: receiverWallet.id, user: { id: receiver.id }, userId: receiver.id });
+            receiverWallet.balance = newReceiverBalance.toFixed(8);
+            const newReceiverTransaction = transactionRepo.create({ balanceBefore: previousReceiverBalance.toFixed(8), balanceAfter: newReceiverBalance.toFixed(8), amount: amount.toFixed(8), type: TransactionTypeEnum.DEPOSIT, wallet: { id: receiverWallet.id }, walletId: receiverWallet.id, user: { id: receiver.id }, userId: receiver.id });
             
             await transactionRepo.save(newReceiverTransaction);
             await walletRepo.save(receiverWallet);
             
             // Transfer Created & Save Changes
-            const newTransfer = transfersRepo.create({ amount: data.amount, sender, senderId, receiver, receiverId: receiver.id });
+            const newTransfer = transfersRepo.create({ amount: amount.toFixed(8), sender, senderId, receiver, receiverId: receiver.id });
             await transfersRepo.save(newTransfer);
             
             // Idempotency Created & Save Changes
