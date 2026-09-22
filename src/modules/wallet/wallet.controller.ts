@@ -5,6 +5,7 @@ import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { KycGuard } from 'src/common/guards/kyc.guard';
 import { KycOnly } from 'src/common/decorators/kyc.decorator';
 import { TransferByCardNumberDto } from './dto/transferByCardNumber.dto';
+import { TransferByShabaNumberDto } from './dto/transferByShabaCard.dto';
 
 @ApiTags("Wallet Management")
 @ApiBearerAuth()
@@ -20,6 +21,14 @@ export class WalletController {
   async transferByCardNumber (@Body() data: TransferByCardNumberDto, @Req() request: Request, @Headers("idempotency-key") idempotencyKey: string) {
 
     return await this.walletService.transferByCardNumber(data, request, idempotencyKey);
+
+  }
+
+  @ApiOperation({ summary: "Transfer By Shaba Number", description: "With this api user can have transfer payment by entering shaba number" })
+  @Post("transfer-by-shaba-number")
+  async transferByShabaNumber (@Body() data: TransferByShabaNumberDto, @Req() request: Request, @Headers("idempotency-key") idempotencyKey: string) {
+
+    return await this.walletService.transferByShabaNumber(data, request, idempotencyKey);
 
   }
 
