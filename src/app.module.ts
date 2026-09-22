@@ -17,6 +17,7 @@ import { AdminModule } from './modules/admin/admin.module';
 import { UsersModule } from './modules/users/users.module';
 import { NotficationsModule } from './modules/notfications/notfications.module';
 import { WalletModule } from './modules/wallet/wallet.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
@@ -34,6 +35,18 @@ import { WalletModule } from './modules/wallet/wallet.module';
 
       })
 
+    }),
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+
+        redis: {
+          host: configService.get("REDIS_HOST"),
+          port: configService.get<number>("REDIS_PORT"),
+        }
+
+      })
     }),
     IpModule,
     AuthModule,
