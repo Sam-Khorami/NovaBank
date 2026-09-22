@@ -10,7 +10,6 @@ import { TransferByCardNumberDto } from './dto/transferByCardNumber.dto';
 import { DataSource } from "typeorm";
 import { IdempotencyStatusEnum, KycStatusEnum, TransactionTypeEnum, WalletStatusEnum } from 'src/common/types/entities.enum';
 import { NotficationsService } from '../notfications/notfications.service';
-import { MailService } from '../mail/mail.service';
 import { Decimal } from "decimal.js";
 import { TransferByShabaNumberDto } from './dto/transferByShabaCard.dto';
 
@@ -26,7 +25,6 @@ export class WalletService {
         @InjectRepository(Transfers) private readonly transfersRepo: Repository<Transfers>,
         private readonly dataSource: DataSource,
         private readonly notficationService: NotficationsService,
-        private readonly mailService: MailService
 
     ) {}
 
@@ -104,14 +102,9 @@ export class WalletService {
 
         })
 
-        // Sender Notfications
-        await this.notficationService.notficationForUser(result.sender.id, "Withdrawal", `The amount of ${data.amount} toman withdraw from your account`);
-        await this.mailService.sendMailToUser(result.sender.email, "Withdrawal", `The amount of ${data.amount} toman withdraw from your account`);
-        
-        // Receiver Notfications
-        await this.notficationService.notficationForUser(result.receiver.id, "Deposit", `The amount of ${data.amount} toman deposit to your account`);
-        await this.mailService.sendMailToUser(result.receiver.email, "Deposit", `The amount of ${data.amount} toman deposit to your account`);
-        
+        await this.notficationService.addTransferPaymentNotificationJob({ userId: result.sender.id, email: result.sender.email, title: "Withdrawal", message: `The amount of ${data.amount} toman withdraw from your account` });
+        await this.notficationService.addTransferPaymentNotificationJob({ userId: result.receiver.id, email: result.receiver.email, title: "Deposit", message: `The amount of ${data.amount} toman deposit to your account` });
+
         return { message: "The transfer payment was successfully completed" }
 
     }
@@ -170,13 +163,11 @@ export class WalletService {
             return { receiver: receiverWallet.user, sender }
 
         })
+        
+        await this.notficationService.addTransferPaymentNotificationJob({ userId: result.sender.id, email: result.sender.email, title: "Withdrawal", message: `The amount of ${data.amount} toman withdraw from your account` });
+        await this.notficationService.addTransferPaymentNotificationJob({ userId: result.receiver.id, email: result.receiver.email, title: "Deposit", message: `The amount of ${data.amount} toman deposit to your account` });
 
-        await this.notficationService.notficationForUser(result.sender.id, "Withdrawal", `The amount of ${data.amount} toman withdraw from your account`);
-        await this.mailService.sendMailToUser(result.sender.email, "Withdrawal", `The amount of ${data.amount} toman withdraw from your account`);
-        
-        await this.notficationService.notficationForUser(result.receiver.id, "Deposit", `The amount of ${data.amount} toman deposit to your account`);
-        await this.mailService.sendMailToUser(result.receiver.email, "Deposit", `The amount of ${data.amount} toman deposit to your account`);
-        
+
         return { message: "The transfer payment was successfully completed" }
 
     }
