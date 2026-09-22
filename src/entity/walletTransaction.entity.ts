@@ -17,13 +17,13 @@ export class WalletTransaction {
     type: TransactionTypeEnum
 
     @Column({ type: 'numeric', precision: 20, scale: 8, nullable: false })
-    amount: number;
+    amount: string;
 
     @Column({ type: 'numeric', precision: 20, scale: 8, nullable: false })
-    balanceBefore: number;
+    balanceBefore: string;
 
     @Column({ type: 'numeric', precision: 20, scale: 8, nullable: false })
-    balanceAfter: number;
+    balanceAfter: string;
 
     @CreateDateColumn()
     createdAt: Date;
