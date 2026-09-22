@@ -147,11 +147,11 @@ export class WalletService {
             if (receiverWallet.user.kycStatus !== KycStatusEnum.APPROVED) throw new BadRequestException("The receiver user not found!")
 
             const newSenderBalance = previousSenderBalance.minus(amount);
-            sender.wallet.balance = newSenderBalance.toFixed(8)
+            sender.wallet.balance = newSenderBalance.toFixed(8);
 
             const newSenderTransaction = transactionRepo.create({ amount: amount.toFixed(8), balanceBefore: previousSenderBalance.toFixed(8), balanceAfter: newSenderBalance.toFixed(8), type: TransactionTypeEnum.WITHDRAW, wallet: { id: sender.wallet.id }, walletId: sender.wallet.id, user: { id: senderId }, userId: senderId });
             await transactionRepo.save(newSenderTransaction);
-            await userRepo.save(sender);
+            await walletRepo.save(sender.wallet);
 
             const previousReceiverBalance = new Decimal(receiverWallet.balance);
             const newReceiverBalance = previousReceiverBalance.plus(amount);
