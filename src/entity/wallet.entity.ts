@@ -11,7 +11,7 @@ export class Wallet {
     id: string;
 
     @Column({ type: 'numeric', precision: 20, scale: 8, nullable: false, default: 0 })
-    balance: number;
+    balance: string;
 
     @Index({ unique: true })
     @Column({ type: "varchar", nullable: true })
