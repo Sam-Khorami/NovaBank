@@ -4,16 +4,26 @@ import { Notfications } from 'src/entity/notfication.entity';
 import { User } from 'src/entity/users.entity';
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { GetNotficationsDto } from './dto/getNotfication.dto';
+import { InjectQueue } from '@nestjs/bull';
+import type { Queue } from 'bull';
+import { TransferNotficationData } from 'src/common/types/interfaces.type';
 
 @Injectable()
 export class NotficationsService {
 
     constructor (
 
+        @InjectQueue("notfications") private readonly notficationQueue: Queue,
         @InjectRepository(User) private readonly userRepo: Repository<User>,
         @InjectRepository(Notfications) private readonly notficationRepo: Repository<Notfications>
 
     ) {}
+
+    async addTransferPaymentNotificationJob (data: TransferNotficationData) {
+
+        await this.notficationQueue.add("send-transfer-notfication", data, { attempts: 3, removeOnComplete: true, removeOnFail: false, backoff: { type: "exponential", delay: 5000 } });
+
+    }
 
     async notficationForUser (userId: string, title: string, message: string) {
 
