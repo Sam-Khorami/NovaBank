@@ -8,6 +8,7 @@ import { NotficationsService } from '../notfications/notfications.service';
 import { Wallet } from 'src/entity/wallet.entity';
 import { RedisService } from '../redis/redis.service';
 import { WalletTransaction } from 'src/entity/walletTransaction.entity';
+import { Decimal } from 'decimal.js';
 
 @Injectable()
 export class UsersService {
@@ -88,11 +89,13 @@ export class UsersService {
         const wallet = await this.walletRepo.findOne({ where: { userId } });
         if (!wallet) throw new BadRequestException("The wallet not found!");
 
-        const previousBalance = Number(wallet.balance);
-        const newBalance = Number(previousBalance + 10000);
-        wallet.balance = newBalance;
+        const depositValue = new Decimal(10000);
 
-        const newTransaction = this.walletTransactionRepo.create({ amount: 10000, balanceBefore: previousBalance, balanceAfter: newBalance, wallet: { id: wallet.id }, walletId: wallet.id, user: { id: userId }, userId });
+        const previousBalance = new Decimal(wallet.balance);
+        const newBalance = new Decimal(previousBalance.toFixed(8) + depositValue.toFixed(8));
+        wallet.balance = newBalance.toFixed(8);
+
+        const newTransaction = this.walletTransactionRepo.create({ amount: depositValue.toFixed(8), balanceBefore: previousBalance.toFixed(8), balanceAfter: newBalance.toFixed(8), wallet: { id: wallet.id }, walletId: wallet.id, user: { id: userId }, userId });
         await this.walletTransactionRepo.save(newTransaction);
 
         await this.walletRepo.save(wallet);
