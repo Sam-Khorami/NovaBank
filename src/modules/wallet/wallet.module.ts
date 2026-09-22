@@ -9,11 +9,12 @@ import { Idempotency } from 'src/entity/idempotency.entity';
 import { Transfers } from 'src/entity/transfers.entity';
 import { NotficationsModule } from '../notfications/notfications.module';
 import { MailModule } from '../mail/mail.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
 
-    TypeOrmModule.forFeature([User, Wallet, WalletTransaction, Idempotency, Transfers]),
+    TypeOrmModule.forFeature([User, Wallet, WalletTransaction, Idempotency, Transfers]),        
     NotficationsModule,
     MailModule
 
