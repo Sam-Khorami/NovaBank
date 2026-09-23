@@ -1,8 +1,4 @@
 import { Process, Processor } from "@nestjs/bull";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Notfications } from "src/entity/notfication.entity";
-import { User } from "src/entity/users.entity";
-import { Repository } from "typeorm";
 import { MailService } from "../mail/mail.service";
 import type { Job } from "bull";
 import { TransferNotficationData } from "src/common/types/interfaces.type";
