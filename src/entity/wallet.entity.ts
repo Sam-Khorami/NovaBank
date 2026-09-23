@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, Index, JoinColumn, OneToMany, OneToOn
 import { User } from "./users.entity";
 import { AccountCodeTypeEnum, AccountTypeEnum, CountryCodeEnum, WalletStatusEnum } from "src/common/types/entities.enum";
 import { WalletTransaction } from "./walletTransaction.entity";
+import { VirtualCard } from "./virtualCard.entity";
 
 
 @Entity("wallet")
@@ -59,5 +60,8 @@ export class Wallet {
 
     @OneToMany(() => WalletTransaction, (walletTransactions) => walletTransactions.wallet)
     transactions: WalletTransaction[];
+
+    @OneToMany(() => VirtualCard, (virtualCards) => virtualCards.wallet)
+    virtualCards: VirtualCard[];
 
 }
