@@ -69,3 +69,17 @@ export enum IdempotencyStatusEnum {
     COMPLETED = "completed",
     PENDING = "pending"
 }
+
+export enum VirtualCardType {
+    STANDARD = "standard",
+    ONE_TIME = "one_time",
+    LIMITED = "limited"
+}
+
+export enum VirtualCardStatus {
+    ACTIVE = "active",
+    EXPIRED = "expired",
+    CANCELED = "canceled",
+    USED = "used",
+    LIMIT_REACHED = "limit_reached"
+}
