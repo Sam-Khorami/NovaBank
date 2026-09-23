@@ -1,8 +1,10 @@
 import { VirtualCardStatus, VirtualCardType } from "src/common/types/entities.enum";
-import { BeforeInsert, Column, CreateDateColumn, Index, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, Index, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import bcrypt from "bcrypt";
 import { Wallet } from "./wallet.entity";
+import { VirtualCardTransaction } from "./virtualCardTransaction.entity";
 
+@Entity("virtual_card")
 export class VirtualCard {
 
     @PrimaryGeneratedColumn("uuid")
@@ -44,6 +46,9 @@ export class VirtualCard {
 
     @ManyToOne(() => Wallet, (wallet) => wallet.virtualCards)
     wallet: Wallet;
+
+    @OneToMany(() => VirtualCardTransaction, (transactions) => transactions.virtualCard)
+    transactions: VirtualCardTransaction[];
 
     @Index()
     @Column({ type: "uuid" })
