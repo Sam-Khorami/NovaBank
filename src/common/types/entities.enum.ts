@@ -83,3 +83,8 @@ export enum VirtualCardStatus {
     USED = "used",
     LIMIT_REACHED = "limit_reached"
 }
+
+export enum VirtualCardTransactionStatusEnum {
+    SUCCESS = "success",
+    FAILED = "failed"
+}
