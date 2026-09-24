@@ -23,9 +23,4 @@ export class CreateVirtualCardDto {
     @Max(24, { message: "The expiry month can not be greater than 24 month" })
     expiryMonth: number;
 
-    @ApiProperty({ enum: VirtualCardType, enumName: "VirtualCardType", example: VirtualCardType.STANDARD, description: "Enter the cardType field" })
-    @IsNotEmpty({ message: "The card type field can not be empty" })
-    @IsEnum(VirtualCardType)
-    cardType: VirtualCardType;
-
 }
