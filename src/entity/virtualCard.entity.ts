@@ -55,7 +55,7 @@ export class VirtualCard {
     walletId: string;
 
     @BeforeInsert()
-    async hashPassword () {
+    async hashInformations () {
         this.cardNumber = await bcrypt.hash(this.cardNumber, 12);
         this.cvv2 = await bcrypt.hash(this.cvv2, 12);
     }
