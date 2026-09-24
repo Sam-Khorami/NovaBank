@@ -1,6 +1,6 @@
 import { Body, Controller, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { VirtualCardService } from './virtual_card.service';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
 import { KycGuard } from 'src/common/guards/kyc.guard';
 import { CreateVirtualCardDto } from './dto/createVirtualCard.dto';
@@ -16,6 +16,7 @@ export class VirtualCardController {
 
   constructor(private readonly virtualCardService: VirtualCardService) {}
 
+  @ApiOperation({ summary: "Create Virtual Card", description: "With this api user can create a virtual card" })
   @Post("create-virtual-card")
   async createVirtualCard (@Body() data: CreateVirtualCardDto, @Query() query: CardTypeQueryDto, @Req() request: Request) {
 
