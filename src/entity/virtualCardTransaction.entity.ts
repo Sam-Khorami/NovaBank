@@ -20,6 +20,9 @@ export class VirtualCardTransaction {
     @ManyToOne(() => VirtualCard, (virtualCard) => virtualCard.transactions)
     virtualCard: VirtualCard;
 
+    @Column({ type: "uuid" })
+    virtualCardId: string;
+
     @CreateDateColumn()
     createdAt: Date;
 
