@@ -6,6 +6,7 @@ import { KycGuard } from 'src/common/guards/kyc.guard';
 import { CreateVirtualCardDto } from './dto/createVirtualCard.dto';
 import { KycOnly } from 'src/common/decorators/kyc.decorator';
 import { CardTypeQueryDto } from './dto/cardTypeQuery.dto';
+import { ChargeDto } from './dto/charge.dto';
 
 @ApiTags("Virtual Card Management")
 @ApiBearerAuth()
@@ -21,6 +22,13 @@ export class VirtualCardController {
   async createVirtualCard (@Body() data: CreateVirtualCardDto, @Query() query: CardTypeQueryDto, @Req() request: Request) {
 
     return await this.virtualCardService.createVirtualCard(data, query, request);
+
+  }
+
+  @Post("charge")
+  async chargeByVirtualCard (@Body() data: ChargeDto, @Req() request: Request) {
+
+    return await this.virtualCardService.chargeByVirtualCard(data, request);
 
   }
 
