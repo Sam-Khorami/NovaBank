@@ -1,6 +1,7 @@
 import { VirtualCardStatus, VirtualCardType } from "src/common/types/entities.enum";
 import { BeforeInsert, Column, CreateDateColumn, Entity, Index, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import bcrypt from "bcrypt";
+import crypto from "crypto";
 import { Wallet } from "./wallet.entity";
 import { VirtualCardTransaction } from "./virtualCardTransaction.entity";
 
@@ -56,7 +57,7 @@ export class VirtualCard {
 
     @BeforeInsert()
     async hashInformations () {
-        this.cardNumber = await bcrypt.hash(this.cardNumber, 12);
+        this.cardNumber = crypto.createHash("sha256").update(this.cardNumber).digest("hex");
         this.cvv2 = await bcrypt.hash(this.cvv2, 12);
     }
 
