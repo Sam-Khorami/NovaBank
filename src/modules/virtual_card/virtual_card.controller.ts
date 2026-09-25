@@ -25,6 +25,7 @@ export class VirtualCardController {
 
   }
 
+  @ApiOperation({ summary: "Charge By Virtual Card", description: "With this api user can have charge by virtual card" })
   @Post("charge")
   async chargeByVirtualCard (@Body() data: ChargeDto, @Req() request: Request) {
 
