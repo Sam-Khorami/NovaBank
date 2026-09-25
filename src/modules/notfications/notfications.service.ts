@@ -6,7 +6,7 @@ import { FindOptionsWhere, Repository } from 'typeorm';
 import { GetNotficationsDto } from './dto/getNotfication.dto';
 import { InjectQueue } from '@nestjs/bull';
 import type { Queue } from 'bull';
-import { TransferNotficationData } from 'src/common/types/interfaces.type';
+import { NotficationData, TransferNotficationData } from 'src/common/types/interfaces.type';
 
 @Injectable()
 export class NotficationsService {
@@ -22,6 +22,12 @@ export class NotficationsService {
     async addTransferPaymentNotificationJob (data: TransferNotficationData) {
 
         await this.notficationQueue.add("send-transfer-notfication", data, { attempts: 3, removeOnComplete: true, removeOnFail: false, backoff: { type: "exponential", delay: 5000 } });
+
+    }
+
+    async addNotificationJob (data: NotficationData) {
+
+        await this.notficationQueue.add("send-notfication-for-user", data, { attempts: 3, removeOnComplete: true, removeOnFail: false, backoff: { type: "exponential", delay: 5000 } });
 
     }
 
