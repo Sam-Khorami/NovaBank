@@ -11,3 +11,10 @@ export interface TransferNotficationData {
     message: string,
     email: string
 }
+
+export interface NotficationData {
+    userId: string,
+    title: string,
+    message: string,
+    email: string
+}
