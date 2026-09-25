@@ -6,11 +6,14 @@ import { User } from 'src/entity/users.entity';
 import { Wallet } from 'src/entity/wallet.entity';
 import { VirtualCard } from 'src/entity/virtualCard.entity';
 import { VirtualCardTransaction } from 'src/entity/virtualCardTransaction.entity';
+import { WalletTransaction } from 'src/entity/walletTransaction.entity';
+import { NotficationsModule } from '../notfications/notfications.module';
 
 @Module({
   imports: [
 
-    TypeOrmModule.forFeature([User, Wallet, VirtualCard, VirtualCardTransaction])
+    TypeOrmModule.forFeature([User, Wallet, WalletTransaction, VirtualCard, VirtualCardTransaction]),
+    NotficationsModule
 
   ],
   controllers: [VirtualCardController],
