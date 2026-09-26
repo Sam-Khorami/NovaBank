@@ -13,6 +13,7 @@ import { GetUserKycStatusDto } from './dto/getUserKycStatus.dto';
 import { GetDocumentStatusDto } from './dto/getDocumentStatus.dto';
 import { Wallet } from 'src/entity/wallet.entity';
 import { NotficationsService } from '../notfications/notfications.service';
+import { VirtualCardService } from '../virtual_card/virtual_card.service';
 
 @Injectable()
 export class AdminService {
@@ -25,6 +26,7 @@ export class AdminService {
         @InjectRepository(Wallet) private readonly walletRepo: Repository<Wallet>,
         @InjectRepository(Permission) private readonly permissionRepo: Repository<Permission>,
         private readonly dataSource: DataSource,
+        private readonly virtualCardService: VirtualCardService,
         private readonly notficationService: NotficationsService
 
     ) {}
@@ -275,12 +277,34 @@ export class AdminService {
 
             const randomAccountNumber = Math.floor(100000000000 + Math.random() * 900000000000).toString();
             const shabaNumber = `${wallet.countryCode}${wallet.controlDigit}${wallet.bankCode}${wallet.accountCodeType}000000${randomAccountNumber}`;
-            const randomCardNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-            const cardNumber = `603799${randomCardNumber}`;
+
+            let checkLuhn = false;
+            let mainCardNumber: string;
+
+            while (!checkLuhn) {
+
+                const randomCardNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
+                let cardNumber = `603799${randomCardNumber}`;
+
+                const checkCardNumber = this.virtualCardService.checkLuhnAlgorithm(cardNumber);
+                if (checkCardNumber) {
+
+                    const checkWallet = await walletRepo.findOne({ where: { cardNumber } });
+                    
+                    if (!checkWallet) {
+
+                        mainCardNumber = cardNumber;
+                        checkLuhn = true;
+
+                    }
+
+                }
+
+        }
 
             wallet.accountNumber = randomAccountNumber;
             wallet.shabaNumber = shabaNumber;
-            wallet.cardNumber = cardNumber;
+            wallet.cardNumber = mainCardNumber;
 
             await documentsRepo.save(document);
             await userRepo.save(user);
