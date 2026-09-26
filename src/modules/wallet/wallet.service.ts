@@ -12,6 +12,8 @@ import { IdempotencyStatusEnum, KycStatusEnum, TransactionTypeEnum, WalletStatus
 import { NotficationsService } from '../notfications/notfications.service';
 import { Decimal } from "decimal.js";
 import { TransferByShabaNumberDto } from './dto/transferByShabaCard.dto';
+import crypto from "crypto";
+import { VirtualCardService } from '../virtual_card/virtual_card.service';
 
 @Injectable()
 export class WalletService {
@@ -25,13 +27,16 @@ export class WalletService {
         @InjectRepository(Transfers) private readonly transfersRepo: Repository<Transfers>,
         private readonly dataSource: DataSource,
         private readonly notficationService: NotficationsService,
+        private readonly virtualCardService: VirtualCardService
 
     ) {}
 
     async transferByCardNumber (data: TransferByCardNumberDto, request: Request, idempotencyKey: string) {
         
         if (!idempotencyKey) throw new BadRequestException("The idempotency key is requiered!");
-        
+        const checkLuhn = this.virtualCardService.checkLuhnAlgorithm(data.receiverCardNumber);
+        if (!checkLuhn) throw new BadRequestException("The entered receiver card number is invalid");
+
         const result = await this.dataSource.transaction(async (manager) => {
             
             // Getting Repositories
@@ -51,7 +56,8 @@ export class WalletService {
             if (checkIdempotency) throw new ConflictException("The transfer payment was successfully completed");
     
             // Getting Receiver Wallet
-            const receiverWallet = await walletRepo.findOne({ where: { cardNumber: data.receiverCardNumber, status: WalletStatusEnum.Active } });
+            const hashedEnteredCardNumber = crypto.createHash('sha256').update(data.receiverCardNumber).digest('hex');
+            const receiverWallet = await walletRepo.findOne({ where: { cardNumber: hashedEnteredCardNumber, status: WalletStatusEnum.Active } });
             if (!receiverWallet) throw new NotFoundException("The receiver not found!");
     
             // Getting Receiver Info
