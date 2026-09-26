@@ -18,5 +18,6 @@ import { NotficationsModule } from '../notfications/notfications.module';
   ],
   controllers: [VirtualCardController],
   providers: [VirtualCardService],
+  exports: [VirtualCardService]
 })
 export class VirtualCardModule {}
