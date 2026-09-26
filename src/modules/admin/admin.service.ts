@@ -300,7 +300,7 @@ export class AdminService {
 
                 }
 
-        }
+            }
 
             wallet.accountNumber = randomAccountNumber;
             wallet.shabaNumber = shabaNumber;
