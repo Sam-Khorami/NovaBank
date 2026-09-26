@@ -1,9 +1,9 @@
-import { Column, CreateDateColumn, Entity, Index, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, Column, CreateDateColumn, Entity, Index, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./users.entity";
 import { AccountCodeTypeEnum, AccountTypeEnum, CountryCodeEnum, WalletStatusEnum } from "src/common/types/entities.enum";
 import { WalletTransaction } from "./walletTransaction.entity";
 import { VirtualCard } from "./virtualCard.entity";
-
+import crypto from "crypto";
 
 @Entity("wallet")
 export class Wallet {
@@ -63,5 +63,10 @@ export class Wallet {
 
     @OneToMany(() => VirtualCard, (virtualCards) => virtualCards.wallet)
     virtualCards: VirtualCard[];
+
+    @BeforeInsert()
+    async hashInformations () {
+        this.cardNumber = crypto.createHash("sha256").update(this.cardNumber).digest("hex");
+    }
 
 }
