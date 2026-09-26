@@ -31,7 +31,7 @@ export class VirtualCardService {
 
     ) {}
 
-    private checkLuhnAlgorithm (cardNumber: string) {
+    public checkLuhnAlgorithm (cardNumber: string) {
 
         let index = 14;
         let lastResult = 0;
