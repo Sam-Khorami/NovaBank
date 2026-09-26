@@ -64,9 +64,5 @@ export class Wallet {
     @OneToMany(() => VirtualCard, (virtualCards) => virtualCards.wallet)
     virtualCards: VirtualCard[];
 
-    @BeforeInsert()
-    async hashInformations () {
-        this.cardNumber = crypto.createHash("sha256").update(this.cardNumber).digest("hex");
-    }
 
 }
