@@ -14,6 +14,7 @@ import { GetDocumentStatusDto } from './dto/getDocumentStatus.dto';
 import { Wallet } from 'src/entity/wallet.entity';
 import { NotficationsService } from '../notfications/notfications.service';
 import { VirtualCardService } from '../virtual_card/virtual_card.service';
+import crypto from "crypto";
 
 @Injectable()
 export class AdminService {
@@ -302,9 +303,11 @@ export class AdminService {
 
             }
 
+            const hashedCardNumber = crypto.createHash('sha256').update(mainCardNumber).digest('hex');
+
             wallet.accountNumber = randomAccountNumber;
             wallet.shabaNumber = shabaNumber;
-            wallet.cardNumber = mainCardNumber;
+            wallet.cardNumber = hashedCardNumber;
 
             await documentsRepo.save(document);
             await userRepo.save(user);
