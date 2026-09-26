@@ -65,6 +65,33 @@ export class VirtualCardService {
 
     }
 
+    private async informationsMatching (cardNumber: string, cvv2: string) {
+
+        const checkLuhn = this.checkLuhnAlgorithm(cardNumber);
+        if (!checkLuhn) throw new BadRequestException("The entered card number is invalid");
+
+        const hashedEnteredCardNumber = crypto.createHash('sha256').update(cardNumber).digest('hex');
+
+        const card = await this.virtualCardRepo.findOne({ where: { cardNumber: hashedEnteredCardNumber } });
+        if (!card) throw new NotFoundException("The card not found!");
+
+        const isCvv2Valid = await bcrypt.compare(cvv2, card.cvv2);
+        if (!isCvv2Valid) throw new BadRequestException("The cvv2 is invalid");
+
+        if (card.status !== VirtualCardStatus.ACTIVE) throw new BadRequestException("Your card is not active any more request for another virtual card");
+        
+        if (new Date(card.expiryDate) < new Date()) {
+
+            card.status = VirtualCardStatus.EXPIRED;
+            await this.virtualCardRepo.save(card);
+            throw new BadRequestException("You card has been expired");
+
+        }
+
+        return card.id;
+
+    }
+
     async createVirtualCard (data: CreateVirtualCardDto, query: CardTypeQueryDto, request: Request) {
 
         const userId = request["user"].id;
@@ -127,7 +154,7 @@ export class VirtualCardService {
 
         const totalAmountLimit = amount.plus(spendingAmount);
         if (spendingLimit.lessThan(totalAmountLimit)) throw new BadRequestException("The entered amount plus your previous spending amount are greater than your spending limit");
-
+        
         const walletBalance = new Decimal(virtualCard.wallet.balance);
         if (walletBalance.lessThan(amount)) throw new BadRequestException("Your balance is not enough");
 
@@ -150,7 +177,7 @@ export class VirtualCardService {
             await walletTransactionRepo.save(newWalletTransaction);
 
             const newSpendingAmount = spendingAmount.plus(amount);
-
+            
             card.spendingAmount = newSpendingAmount.toFixed(8);
             const newVirtualCardTransaction = virtualCardTransactionRepo.create({ amount: amount.toFixed(8), merchant: data.merchant, virtualCard: { id: card.id }, virtualCardId: card.id });
 
@@ -182,32 +209,5 @@ export class VirtualCardService {
 
     }
 
-    private async informationsMatching (cardNumber: string, cvv2: string) {
-
-        const checkLuhn = this.checkLuhnAlgorithm(cardNumber);
-        if (!checkLuhn) throw new BadRequestException("The entered card number is invalid");
-
-        const hashedEnteredCardNumber = crypto.createHash('sha256').update(cardNumber).digest('hex');
-        const hashedEnteredCvv2 = await bcrypt.hash(cvv2, 12); 
-
-        const card = await this.virtualCardRepo.findOne({ where: { cardNumber: hashedEnteredCardNumber } });
-        if (!card) throw new NotFoundException("The card not found!");
-
-        const isCvv2Valid = await bcrypt.compare(cvv2, card.cvv2);
-        if (!isCvv2Valid) throw new BadRequestException("The cvv2 is invalid");
-
-        if (card.status !== VirtualCardStatus.ACTIVE) throw new BadRequestException("Your card is not active any more request for another virtual card");
-        
-        if (new Date(card.expiryDate) < new Date()) {
-
-            card.status = VirtualCardStatus.EXPIRED;
-            await this.virtualCardRepo.save(card);
-            throw new BadRequestException("You card has been expired");
-
-        }
-
-        return card.id;
-
-    }
 
 }
