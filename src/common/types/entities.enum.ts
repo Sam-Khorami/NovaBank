@@ -88,3 +88,11 @@ export enum VirtualCardTransactionStatusEnum {
     SUCCESS = "success",
     FAILED = "failed"
 }
+
+export enum LoanStatusEnum {
+    PENDING = "pending",
+    APPROVED = "approved",
+    REJECTED = "rejected",
+    ACTIVE = "active",
+    COMPLETED = "completed"
+}
