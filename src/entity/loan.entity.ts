@@ -1,6 +1,7 @@
-import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, Index, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./users.entity";
 import { LoanStatusEnum } from "src/common/types/entities.enum";
+import { LoanInstallments } from "./loanInstallments.entity";
 
 
 @Entity("loans")
@@ -16,7 +17,7 @@ export class Loan {
     interestRate: number | null;
 
     @Column({ type: 'numeric', precision: 20, scale: 8, nullable: true })
-    monthlyPayment: number | null;
+    monthlyPayment: string | null;
 
     @Column({ type: "int", nullable: false, default: 12 })
     months: number;
@@ -26,6 +27,9 @@ export class Loan {
 
     @Column({ type: "text", nullable: true })
     reason: string | null;
+
+    @OneToMany(() => LoanInstallments, (installments) => installments.loan)
+    installments: LoanInstallments[];
 
     @ManyToOne(() => User, (user) => user.loans)
     user: User;
