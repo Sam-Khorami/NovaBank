@@ -96,3 +96,9 @@ export enum LoanStatusEnum {
     ACTIVE = "active",
     COMPLETED = "completed"
 }
+
+export enum InstallmentStatusEnum {
+    PENDING = "pending",
+    PAID = "paid",
+    OVERDUE = "overdue"
+}
