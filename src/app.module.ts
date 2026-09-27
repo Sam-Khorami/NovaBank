@@ -19,6 +19,7 @@ import { NotficationsModule } from './modules/notfications/notfications.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { BullModule } from '@nestjs/bull';
 import { VirtualCardModule } from './modules/virtual_card/virtual_card.module';
+import { LoanModule } from './modules/loan/loan.module';
 
 @Module({
   imports: [
@@ -59,7 +60,8 @@ import { VirtualCardModule } from './modules/virtual_card/virtual_card.module';
     UsersModule,
     NotficationsModule,
     WalletModule,
-    VirtualCardModule
+    VirtualCardModule,
+    LoanModule
 
   ],
   controllers: [AppController],
