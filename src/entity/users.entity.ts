@@ -9,6 +9,7 @@ import { Documents } from "./documents.entity";
 import { Notfications } from "./notfication.entity";
 import { Transfers } from "./transfers.entity";
 import { Idempotency } from "./idempotency.entity";
+import { Loan } from "./loan.entity";
 
 
 @Entity("users")
@@ -81,6 +82,9 @@ export class User {
 
     @OneToMany(() => Idempotency, (idempotencies) => idempotencies.user)
     idempotencies: Idempotency[];
+
+    @OneToMany(() => Loan, (loans) => loans.user)
+    loans: Loan[];
 
     @BeforeInsert()
     async hashPassword () {
