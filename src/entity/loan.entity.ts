@@ -4,6 +4,7 @@ import { LoanStatusEnum } from "src/common/types/entities.enum";
 import { LoanInstallments } from "./loanInstallments.entity";
 
 
+@Index(["userId", "status"])
 @Entity("loans")
 export class Loan {
 
@@ -34,7 +35,6 @@ export class Loan {
     @ManyToOne(() => User, (user) => user.loans)
     user: User;
 
-    @Index()
     @Column({ type: "uuid" })
     userId: string;
 
