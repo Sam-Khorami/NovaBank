@@ -10,6 +10,7 @@ export const databaseConfig: TypeOrmModuleAsyncOptions = {
 
         return {
 
+            applicationName: "NovaBank",
             type: "postgres",
             database: config.get<string>("DB_NAME"),
             port: Number(config.get<number>("DB_PORT")),
@@ -19,6 +20,7 @@ export const databaseConfig: TypeOrmModuleAsyncOptions = {
 
             autoLoadEntities: true,
             retryAttempts: 5,
+            extra: { max: 10 },
 
             synchronize: config.get<string>("NODE_ENV") === "development"
 
