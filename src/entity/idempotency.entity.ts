@@ -21,7 +21,6 @@ export class Idempotency {
     @ManyToOne(() => User, (user) => user.idempotencies, { onDelete: "CASCADE" })
     user: User;
 
-    @Index()
     @Column({ type: "uuid" })
     userId: string;
 
