@@ -9,13 +9,14 @@ import { ValidationPipe } from '@nestjs/common';
 import compression from "compression";
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from "path";
+import { DbPerformanceInterceptor } from './common/interceptors/db-performance.interceptor';
 
 async function bootstrap() {
 
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const logger = app.get(AppLogger);
 
-  app.useGlobalInterceptors(new ResponseFormaterInterceptor, new LoggerInterceptor(logger));
+  app.useGlobalInterceptors(new ResponseFormaterInterceptor, new DbPerformanceInterceptor(logger), new LoggerInterceptor(logger));
   app.useGlobalFilters(new GlobalExceptionFilter(logger));
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   app.useStaticAssets(join(__dirname, "..", "uploads"), { prefix: "/uploads/" });
