@@ -24,8 +24,8 @@ export class DbPerformanceInterceptor implements NestInterceptor {
 
                 const duration = Date.now() - startTime;
 
-                if (duration > 500) this.logger.warn(`Slow: ${request.method} ${request.url}`);
-                else this.logger.log(`Fast: ${request.method} ${request.url}`);
+                if (duration > 500) this.logger.warn(`Slow: ${request.method} ${request.url} - ${duration}ms`);
+                else this.logger.log(`Fast: ${request.method} ${request.url} - ${duration}ms`);
 
             })
 
