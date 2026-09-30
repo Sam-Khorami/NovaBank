@@ -170,6 +170,12 @@ describe ("Auth Service", () => {
 
         })
 
+        it ("Should return Conflict Exception or user already exists", async () => {
+
+            expect(async () => { await authService.signUp(signUpDto) }).rejects.toThrow(ConflictException);
+
+        })
+
     })
 
 })
