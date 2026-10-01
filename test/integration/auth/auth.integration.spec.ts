@@ -178,4 +178,4 @@ describe ("Auth Service", () => {
 
     })
 
-})
+});
