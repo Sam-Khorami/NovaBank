@@ -9,5 +9,7 @@ export enum PermissionsEnum {
     ADMIN_ACCESS_DELETE_ROLE = "admin:role:delete",
     ADMIN_ACCESS_READ_ROLE = "admin:role:read",
     ADMIN_ACCESS_REVOKE_PERMISSION = "admin:permission:revoke",
-    ADMIN_ACCESS_MANAGE_KYC = "admin:kyc:manage"
+    ADMIN_ACCESS_MANAGE_KYC = "admin:kyc:manage",
+    ADMIN_ACCESS_MANAGE_FREEZE = "admin:freeze:manage",
+    ADMIN_ACCESS_MANAGE_LOAN = "admin:loan:manage"
 }
