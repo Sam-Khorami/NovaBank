@@ -10,11 +10,13 @@ import { Wallet } from 'src/entity/wallet.entity';
 import { WalletTransaction } from 'src/entity/walletTransaction.entity';
 import { NotficationsModule } from '../notfications/notfications.module';
 import { VirtualCardModule } from '../virtual_card/virtual_card.module';
+import { Loan } from 'src/entity/loan.entity';
+import { LoanInstallments } from 'src/entity/loanInstallments.entity';
 
 @Module({
   imports: [
 
-    TypeOrmModule.forFeature([User, Role, Permission, Documents, Wallet, WalletTransaction]),
+    TypeOrmModule.forFeature([User, Role, Permission, Documents, Wallet, WalletTransaction, Loan, LoanInstallments]),
     NotficationsModule,
     VirtualCardModule
 
