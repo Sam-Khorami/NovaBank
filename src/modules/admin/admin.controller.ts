@@ -10,6 +10,7 @@ import { AddRoleDto } from './dto/addRole.dto';
 import { GetUsersDto } from './dto/getUsers.dto';
 import { GetUserKycStatusDto } from './dto/getUserKycStatus.dto';
 import { GetDocumentStatusDto } from './dto/getDocumentStatus.dto';
+import { AcceptLoanDto } from './dto/acceptLoan.dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
@@ -174,6 +175,7 @@ export class AdminController {
   }
 
   @ApiOperation({ summary: "Freeze Account", description: "With this api admin can freeze a wallet to stop any transaction for that user" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_MANAGE_FREEZE)
   @Patch("freeze-account/:userId")
   async freezeAccount (@Param("userId", ParseUUIDPipe) userId: string) {
 
@@ -182,10 +184,18 @@ export class AdminController {
   }
 
   @ApiOperation({ summary: "Unfreeze Account", description: "With this api admin can unfreeze a wallet" })
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_MANAGE_FREEZE)
   @Patch("unfreeze-account/:userId")
   async unfreezeAccount (@Param("userId", ParseUUIDPipe) userId: string) {
 
     return await this.adminService.unFreezeAccount(userId);
+
+  }
+
+  @Patch("accept-loan/:loanId")
+  async acceptLoan (@Body() data: AcceptLoanDto, @Param("loanId", ParseUUIDPipe) loanId: string) {
+
+    return await this.adminService.acceptLoan(data, loanId);
 
   }
 
