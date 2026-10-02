@@ -8,13 +8,18 @@ import { AddRoleDto } from './dto/addRole.dto';
 import { Role } from 'src/entity/role.entity';
 import { GetUsersDto } from './dto/getUsers.dto';
 import { Documents } from 'src/entity/documents.entity';
-import { DocumentStatusEnum, KycStatusEnum, WalletStatusEnum } from 'src/common/types/entities.enum';
+import { DocumentStatusEnum, KycStatusEnum, LoanStatusEnum, WalletStatusEnum } from 'src/common/types/entities.enum';
 import { GetUserKycStatusDto } from './dto/getUserKycStatus.dto';
 import { GetDocumentStatusDto } from './dto/getDocumentStatus.dto';
 import { Wallet } from 'src/entity/wallet.entity';
 import { NotficationsService } from '../notfications/notfications.service';
 import { VirtualCardService } from '../virtual_card/virtual_card.service';
 import crypto from "crypto";
+import { AcceptLoanDto } from './dto/acceptLoan.dto';
+import { Loan } from 'src/entity/loan.entity';
+import { LoanInstallments } from 'src/entity/loanInstallments.entity';
+import { Decimal } from 'decimal.js';
+import { first } from 'rxjs';
 
 @Injectable()
 export class AdminService {
@@ -26,6 +31,8 @@ export class AdminService {
         @InjectRepository(Documents) private readonly documentsRepo: Repository<Documents>,
         @InjectRepository(Wallet) private readonly walletRepo: Repository<Wallet>,
         @InjectRepository(Permission) private readonly permissionRepo: Repository<Permission>,
+        @InjectRepository(Loan) private readonly loanRepo: Repository<Loan>,
+        @InjectRepository(LoanInstallments) private readonly installmentsRepo: Repository<LoanInstallments>,
         private readonly dataSource: DataSource,
         private readonly virtualCardService: VirtualCardService,
         private readonly notficationService: NotficationsService
@@ -366,6 +373,34 @@ export class AdminService {
 
         await this.walletRepo.save(wallet);
         return { message: "The account made unfreeze" }
+
+    }
+
+    async acceptLoan (data: AcceptLoanDto, loanId: string) {
+
+        const loan = await this.loanRepo.findOne({ where: { id: loanId } });
+        if (!loan) throw new NotFoundException("The loan not found!");
+        if (loan.status !== LoanStatusEnum.PENDING) throw new BadRequestException("The loan request has already been reviewed");
+
+        const monthlyPayment = this.calculateLoan(loan.months, loan.primaryAmount, data.interestRate);
+        
+
+    }
+
+    private calculateLoan (months: number, totalMoney: string, interestRate: number) {
+
+        const total = new Decimal(totalMoney);
+        const yearInterestRate = new Decimal(interestRate);
+
+        const monthInterestRate = yearInterestRate.dividedBy(100).dividedBy(months);
+
+        const power = monthInterestRate.plus(1).pow(months);
+        
+        const firstCalculate = monthInterestRate.times(power);
+        const secondCalculate = power.minus(1);
+
+        const installment = firstCalculate.dividedBy(secondCalculate).times(total);
+        return installment;
 
     }
 
