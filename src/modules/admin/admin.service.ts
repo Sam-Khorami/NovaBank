@@ -443,7 +443,7 @@ export class AdminService {
 
     async acceptLoan (data: AcceptLoanDto, loanId: string) {
 
-        const loan = await this.loanRepo.findOne({ where: { id: loanId } });
+        const loan = await this.loanRepo.findOne({ where: { id: loanId }, relations: { user: true } });
         if (!loan) throw new NotFoundException("The loan not found!");
         if (loan.status !== LoanStatusEnum.PENDING) throw new BadRequestException("The loan request has already been reviewed");
 
@@ -481,6 +481,7 @@ export class AdminService {
 
         })
 
+        await this.notficationService.addNotificationJob({ userId: loan.userId, email: loan.user.email, title: "Accept Loan", message: `Hi there,\nYour request for loan accepted with ${data.interestRate} interest rate percent` });
         return { message: "Loan approved and activated successfully" }
 
     }
