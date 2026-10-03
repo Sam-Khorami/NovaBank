@@ -8,7 +8,7 @@ import { AddRoleDto } from './dto/addRole.dto';
 import { Role } from 'src/entity/role.entity';
 import { GetUsersDto } from './dto/getUsers.dto';
 import { Documents } from 'src/entity/documents.entity';
-import { DocumentStatusEnum, KycStatusEnum, LoanStatusEnum, WalletStatusEnum } from 'src/common/types/entities.enum';
+import { DocumentStatusEnum, InstallmentStatusEnum, KycStatusEnum, LoanStatusEnum, TransactionTypeEnum, WalletStatusEnum } from 'src/common/types/entities.enum';
 import { GetUserKycStatusDto } from './dto/getUserKycStatus.dto';
 import { GetDocumentStatusDto } from './dto/getDocumentStatus.dto';
 import { Wallet } from 'src/entity/wallet.entity';
@@ -20,6 +20,7 @@ import { Loan } from 'src/entity/loan.entity';
 import { LoanInstallments } from 'src/entity/loanInstallments.entity';
 import { Decimal } from 'decimal.js';
 import { first } from 'rxjs';
+import { WalletTransaction } from 'src/entity/walletTransaction.entity';
 
 @Injectable()
 export class AdminService {
@@ -382,9 +383,89 @@ export class AdminService {
         if (!loan) throw new NotFoundException("The loan not found!");
         if (loan.status !== LoanStatusEnum.PENDING) throw new BadRequestException("The loan request has already been reviewed");
 
-        const monthlyPayment = this.calculateLoan(loan.months, loan.primaryAmount, data.interestRate);
-        
+        const installment = this.calculateLoan(loan.months, loan.primaryAmount, data.interestRate);
+        const installmentRows = this.buildInstallmentSchedule(loan.months, loan.primaryAmount, data.interestRate);
 
+        await this.dataSource.transaction(async (manager) => {
+
+            const loanRepo = manager.getRepository(Loan);
+            const installmentRepo = manager.getRepository(LoanInstallments);
+            const walletRepo = manager.getRepository(Wallet);
+            const walletTransactionRepo = manager.getRepository(WalletTransaction);
+
+            const wallet = await walletRepo.createQueryBuilder("wallet").where("wallet.userId = :userId", { userId: loan.userId }).setLock("pessimistic_write").getOne();
+            if (!wallet) throw new NotFoundException("The wallet not found!");
+
+            const previousBalance = new Decimal(wallet.balance);
+            const totalMoney = new Decimal(loan.primaryAmount);
+            
+            const newBalance = previousBalance.plus(totalMoney);
+            wallet.balance = newBalance.toFixed(8);
+
+            const newTransaction = walletTransactionRepo.create({ balanceBefore: previousBalance.toFixed(8), balanceAfter: newBalance.toFixed(8), amount: totalMoney.toFixed(8), user: { id: loan.userId }, userId: loan.userId, type: TransactionTypeEnum.ADMINDEPOSIT, wallet: { id: wallet.id }, walletId: wallet.id });
+            await walletRepo.save(wallet);
+            await walletTransactionRepo.save(newTransaction);
+
+            const installmentEntities = installmentRepo.create(installmentRows.map(row => ({ ...row, loan: { id: loan.id }, loanId: loan.id })));
+            await installmentRepo.save(installmentEntities);
+
+
+            loan.status = LoanStatusEnum.ACTIVE;
+            loan.interestRate = data.interestRate;
+            loan.monthlyPayment = installment.toFixed(8);
+            await loanRepo.save(loan);
+
+        })
+
+        return { message: "Loan approved and activated successfully" }
+
+    }
+
+    private buildInstallmentSchedule(months: number, totalMoney: string, interestRate: number) {
+
+        const total = new Decimal(totalMoney);
+        const yearInterestRate = new Decimal(interestRate);
+        const monthInterestRate = yearInterestRate.dividedBy(100).dividedBy(12);
+
+        const power = monthInterestRate.plus(1).pow(months);
+        const fixedInstallment = monthInterestRate.times(power).dividedBy(power.minus(1)).times(total);
+
+        let remainingBalance = total;
+        const rows = [];
+
+        const dueDate = this.getNextMonthFirstDate();
+
+        for (let i = 1; i <= months; i++) {
+
+            const interestAmount = remainingBalance.times(monthInterestRate);
+            const principalAmount = fixedInstallment.minus(interestAmount);
+
+            remainingBalance = remainingBalance.minus(principalAmount);
+
+            const isLastRow = i === months;
+            const finalRemaining = isLastRow ? new Decimal(0) : remainingBalance;
+
+            rows.push({
+                installmentsNumber: i,
+                dueDate:             new Date(dueDate),
+                interestAmount:      interestAmount.toFixed(8),
+                principalAmount:     principalAmount.toFixed(8),
+                totalAmount:         fixedInstallment.toFixed(8),
+                remainingBalance:    finalRemaining.toFixed(8)
+            });
+
+            dueDate.setMonth(dueDate.getMonth() + 1);
+        }
+
+        return rows;
+    
+    }
+
+    private getNextMonthFirstDate() {
+        
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    
     }
 
     private calculateLoan (months: number, totalMoney: string, interestRate: number) {
@@ -395,7 +476,7 @@ export class AdminService {
         const monthInterestRate = yearInterestRate.dividedBy(100).dividedBy(months);
 
         const power = monthInterestRate.plus(1).pow(months);
-        
+
         const firstCalculate = monthInterestRate.times(power);
         const secondCalculate = power.minus(1);
 
