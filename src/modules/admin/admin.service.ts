@@ -40,6 +40,70 @@ export class AdminService {
 
     ) {}
 
+    private buildInstallmentSchedule(months: number, totalMoney: string, interestRate: number) {
+
+        const total = new Decimal(totalMoney);
+        const yearInterestRate = new Decimal(interestRate);
+        const monthInterestRate = yearInterestRate.dividedBy(100).dividedBy(12);
+
+        const power = monthInterestRate.plus(1).pow(months);
+        const fixedInstallment = monthInterestRate.times(power).dividedBy(power.minus(1)).times(total);
+
+        let remainingBalance = total;
+        const rows = [];
+
+        const dueDate = this.getNextMonthFirstDate();
+
+        for (let i = 1; i <= months; i++) {
+
+            const interestAmount = remainingBalance.times(monthInterestRate);
+            const principalAmount = fixedInstallment.minus(interestAmount);
+
+            remainingBalance = remainingBalance.minus(principalAmount);
+
+            const isLastRow = i === months;
+            const finalRemaining = isLastRow ? new Decimal(0) : remainingBalance;
+
+            rows.push({
+                installmentsNumber: i,
+                dueDate:             new Date(dueDate),
+                interestAmount:      interestAmount.toFixed(8),
+                principalAmount:     principalAmount.toFixed(8),
+                totalAmount:         fixedInstallment.toFixed(8),
+                remainingBalance:    finalRemaining.toFixed(8)
+            });
+
+            dueDate.setMonth(dueDate.getMonth() + 1);
+        }
+
+        return rows;
+    
+    }
+
+    private getNextMonthFirstDate() {
+        
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    
+    }
+
+    private calculateLoan (months: number, totalMoney: string, interestRate: number) {
+
+        const total = new Decimal(totalMoney);
+        const yearInterestRate = new Decimal(interestRate);
+
+        const monthInterestRate = yearInterestRate.dividedBy(100).dividedBy(months);
+
+        const power = monthInterestRate.plus(1).pow(months);
+
+        const firstCalculate = monthInterestRate.times(power);
+        const secondCalculate = power.minus(1);
+
+        const installment = firstCalculate.dividedBy(secondCalculate).times(total);
+        return installment;
+
+    }
+
     async getPermissionsList () {
 
         const permissions = await this.permissionRepo.find();
@@ -418,70 +482,6 @@ export class AdminService {
         })
 
         return { message: "Loan approved and activated successfully" }
-
-    }
-
-    private buildInstallmentSchedule(months: number, totalMoney: string, interestRate: number) {
-
-        const total = new Decimal(totalMoney);
-        const yearInterestRate = new Decimal(interestRate);
-        const monthInterestRate = yearInterestRate.dividedBy(100).dividedBy(12);
-
-        const power = monthInterestRate.plus(1).pow(months);
-        const fixedInstallment = monthInterestRate.times(power).dividedBy(power.minus(1)).times(total);
-
-        let remainingBalance = total;
-        const rows = [];
-
-        const dueDate = this.getNextMonthFirstDate();
-
-        for (let i = 1; i <= months; i++) {
-
-            const interestAmount = remainingBalance.times(monthInterestRate);
-            const principalAmount = fixedInstallment.minus(interestAmount);
-
-            remainingBalance = remainingBalance.minus(principalAmount);
-
-            const isLastRow = i === months;
-            const finalRemaining = isLastRow ? new Decimal(0) : remainingBalance;
-
-            rows.push({
-                installmentsNumber: i,
-                dueDate:             new Date(dueDate),
-                interestAmount:      interestAmount.toFixed(8),
-                principalAmount:     principalAmount.toFixed(8),
-                totalAmount:         fixedInstallment.toFixed(8),
-                remainingBalance:    finalRemaining.toFixed(8)
-            });
-
-            dueDate.setMonth(dueDate.getMonth() + 1);
-        }
-
-        return rows;
-    
-    }
-
-    private getNextMonthFirstDate() {
-        
-        const now = new Date();
-        return new Date(now.getFullYear(), now.getMonth() + 1, 1);
-    
-    }
-
-    private calculateLoan (months: number, totalMoney: string, interestRate: number) {
-
-        const total = new Decimal(totalMoney);
-        const yearInterestRate = new Decimal(interestRate);
-
-        const monthInterestRate = yearInterestRate.dividedBy(100).dividedBy(months);
-
-        const power = monthInterestRate.plus(1).pow(months);
-
-        const firstCalculate = monthInterestRate.times(power);
-        const secondCalculate = power.minus(1);
-
-        const installment = firstCalculate.dividedBy(secondCalculate).times(total);
-        return installment;
 
     }
 
