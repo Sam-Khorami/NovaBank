@@ -192,6 +192,7 @@ export class AdminController {
 
   }
 
+  @ApiOperation({ summary: "Accept Loan", description: "With this api admin can accept a loan" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_MANAGE_LOAN)
   @Patch("accept-loan/:loanId")
   async acceptLoan (@Body() data: AcceptLoanDto, @Param("loanId", ParseUUIDPipe) loanId: string) {
