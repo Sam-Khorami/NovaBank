@@ -201,6 +201,13 @@ export class AdminController {
 
   }
 
+  @Patch("reject-loan/:loanId")
+  async rejectLoan (@Param("loanId", ParseUUIDPipe) loanId: string) {
+
+    return await this.adminService.rejectLoan(loanId);
+
+  }
+
   @ApiOperation({ summary: "Get Users", description: "With this api admin can get users list" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_GET_USERS)
   @Get("users")
