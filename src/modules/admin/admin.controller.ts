@@ -201,6 +201,7 @@ export class AdminController {
 
   }
 
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_MANAGE_LOAN)
   @Patch("reject-loan/:loanId")
   async rejectLoan (@Param("loanId", ParseUUIDPipe) loanId: string) {
 
