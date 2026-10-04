@@ -486,6 +486,20 @@ export class AdminService {
 
     }
 
+    async rejectLoan (loanId: string) {
+
+        const loan = await this.loanRepo.findOne({ where: { id: loanId }, relations: { user: true } });
+        if (!loan) throw new NotFoundException("The loan not found!");
+        if (loan.status !== LoanStatusEnum.PENDING) throw new BadRequestException("The loan request has already been reviewed")
+
+        loan.status = LoanStatusEnum.REJECTED;
+        await this.loanRepo.save(loan);
+
+        await this.notficationService.addNotificationJob({ userId: loan.userId, email: loan.user.email, title: "Reject Loan", message: `Hi there,\nYour request for loan rejected` });
+        return { message: "The loan rejected successfully" }
+
+    }
+
     async getUsers (query: GetUsersDto) {
 
         const offset = (query.page - 1) * query.limit;
