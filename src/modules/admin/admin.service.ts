@@ -22,6 +22,7 @@ import { Decimal } from 'decimal.js';
 import { first } from 'rxjs';
 import { WalletTransaction } from 'src/entity/walletTransaction.entity';
 import { GetLoanRequestQueryDto } from './dto/getLoanRequest.dto';
+import { GetInstallmentsQueryDto } from './dto/getUserInstallment.dto';
 
 @Injectable()
 export class AdminService {
@@ -509,6 +510,23 @@ export class AdminService {
         if (query.status) where.status = query.status;
         const [statuses, total] = await this.loanRepo.findAndCount({ where, skip: offset, take: query.limit, order: { id: "ASC" } });
 
+        return { data: statuses , pagination: { page: query.page, limit: query.limit, total } }
+
+    }
+
+    async getUserInstallments (loanId: string, query: GetInstallmentsQueryDto) {
+
+        const loan = await this.loanRepo.findOne({ where: { id: loanId } });
+        if (!loan) throw new NotFoundException("Loan not found!");
+        if (loan.status !== LoanStatusEnum.APPROVED && loan.status !== LoanStatusEnum.ACTIVE) throw new BadRequestException("The loan did not approved yet");
+
+        const offset = (query.page - 1) * query.limit;
+        const where: FindOptionsWhere<LoanInstallments> = {};
+
+        if (query.status) where.status = query.status;
+        where.loanId = loanId;
+
+        const [statuses, total] = await this.installmentsRepo.findAndCount({ where, skip: offset, take: query.limit, order: { id: "ASC" } });
         return { data: statuses , pagination: { page: query.page, limit: query.limit, total } }
 
     }
