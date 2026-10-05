@@ -221,6 +221,7 @@ export class AdminController {
 
   }
 
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_MANAGE_LOAN)
   @Get("user-installments/:loanId")
   async getUserInstallments (@Param("loanId", ParseUUIDPipe) loanId: string, @Query() query: GetInstallmentsQueryDto) {
 
