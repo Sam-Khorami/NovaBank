@@ -21,6 +21,7 @@ import { LoanInstallments } from 'src/entity/loanInstallments.entity';
 import { Decimal } from 'decimal.js';
 import { first } from 'rxjs';
 import { WalletTransaction } from 'src/entity/walletTransaction.entity';
+import { GetLoanRequestQueryDto } from './dto/getLoanRequest.dto';
 
 @Injectable()
 export class AdminService {
@@ -497,6 +498,18 @@ export class AdminService {
 
         await this.notficationService.addNotificationJob({ userId: loan.userId, email: loan.user.email, title: "Reject Loan", message: `Hi there,\nYour request for loan rejected` });
         return { message: "The loan rejected successfully" }
+
+    }
+
+    async getLoanRequests (query: GetLoanRequestQueryDto) {
+
+        const offset = (query.page - 1) * query.limit;
+        const where: FindOptionsWhere<Loan> = {}
+
+        if (query.status) where.status = query.status;
+        const [statuses, total] = await this.loanRepo.findAndCount({ where, skip: offset, take: query.limit, order: { id: "ASC" } });
+
+        return { data: statuses , pagination: { page: query.page, limit: query.limit, total } }
 
     }
 
