@@ -11,6 +11,7 @@ import { GetUsersDto } from './dto/getUsers.dto';
 import { GetUserKycStatusDto } from './dto/getUserKycStatus.dto';
 import { GetDocumentStatusDto } from './dto/getDocumentStatus.dto';
 import { AcceptLoanDto } from './dto/acceptLoan.dto';
+import { GetLoanRequestQueryDto } from './dto/getLoanRequest.dto';
 
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionGuard)
@@ -207,6 +208,13 @@ export class AdminController {
   async rejectLoan (@Param("loanId", ParseUUIDPipe) loanId: string) {
 
     return await this.adminService.rejectLoan(loanId);
+
+  }
+
+  @Get("get-loans")
+  async getLoanRequests (@Query() query: GetLoanRequestQueryDto) {
+
+    return await this.adminService.getLoanRequests(query);
 
   }
 
