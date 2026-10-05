@@ -211,6 +211,7 @@ export class AdminController {
 
   }
 
+  @Permissions(PermissionsEnum.ADMIN_ACCESS_MANAGE_LOAN)
   @Get("get-loans")
   async getLoanRequests (@Query() query: GetLoanRequestQueryDto) {
 
