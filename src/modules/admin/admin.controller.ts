@@ -212,7 +212,7 @@ export class AdminController {
 
   }
 
-  @ApiOperation({ summary: "Reject Loan", description: "With this api admin can get all loans with status" })
+  @ApiOperation({ summary: "Get Loan", description: "With this api admin can get all loans with status" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_MANAGE_LOAN)
   @Get("get-loans")
   async getLoanRequests (@Query() query: GetLoanRequestQueryDto) {
@@ -221,6 +221,7 @@ export class AdminController {
 
   }
 
+  @ApiOperation({ summary: "Get Loan Installments", description: "With this api admin can get all loan installments with status" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_MANAGE_LOAN)
   @Get("user-installments/:loanId")
   async getUserInstallments (@Param("loanId", ParseUUIDPipe) loanId: string, @Query() query: GetInstallmentsQueryDto) {
