@@ -211,6 +211,7 @@ export class AdminController {
 
   }
 
+  @ApiOperation({ summary: "Reject Loan", description: "With this api admin can get all loans with status" })
   @Permissions(PermissionsEnum.ADMIN_ACCESS_MANAGE_LOAN)
   @Get("get-loans")
   async getLoanRequests (@Query() query: GetLoanRequestQueryDto) {
