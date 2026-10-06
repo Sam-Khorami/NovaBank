@@ -109,5 +109,13 @@ export class UsersController {
 
   }
 
+  @KycOnly()
+  @Get("my-loan-details")
+  async getMyLoanDetails (@Req() request: Request) {
+
+    return await this.usersService.getMyLoanDetails(request);
+
+  }
+
 
 }
