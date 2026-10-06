@@ -195,6 +195,11 @@ describe ("Auth Service", () => {
             phoneNumber: "09166234681",
             password: "4061539558Sam@"
         }
+
+        const wrongPasswordLoginDto = {
+            phoneNumber: "09025244094",
+            password: "4061539558Sami@"
+        }
         
         it("Should login the user", async () => {
 
@@ -212,6 +217,12 @@ describe ("Auth Service", () => {
         it("Should return verify your email", async () => {
 
             await expect(authService.login(verifyLoginDto)).rejects.toThrow("Please verify your email first");
+
+        })
+
+        it("Should password not match", async () => {
+
+            await expect(authService.login(wrongPasswordLoginDto)).rejects.toThrow("The user with this information not found!");
 
         })
 
