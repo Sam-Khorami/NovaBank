@@ -26,7 +26,7 @@ import { Notfications } from "src/entity/notfication.entity";
 import { Ip } from "src/entity/ip.entity";
 import { Documents } from "src/entity/documents.entity";
 import { UserRoleEnum } from "src/common/types/entities.enum";
-import { ConflictException } from "@nestjs/common";
+import { ConflictException, NotFoundException } from "@nestjs/common";
 
 const mockNotficationsService = {
     addTransferNotficationJob: jest.fn<any>(),
@@ -173,6 +173,28 @@ describe ("Auth Service", () => {
         it ("Should return Conflict Exception or user already exists", () => {
 
             expect(async () => { await authService.signUp(signUpDto) }).rejects.toThrow(ConflictException);
+
+        })
+
+    })
+
+
+    describe("Login", () => {
+
+        const rightLoginDto = {
+            phoneNumber: "09025244094",
+            password: "4061539558Sam@"
+        }
+
+        const falseLoginDto = {
+            phoneNumber: "09168761510",
+            password: "4061539558Sam@"
+        }
+        
+        it("Should login the user", async () => {
+
+            const result = await authService.login(rightLoginDto);
+            expect(result).toEqual({ message: "The otp code sent to your email" });
 
         })
 
