@@ -9,6 +9,8 @@ import { Wallet } from 'src/entity/wallet.entity';
 import { RedisService } from '../redis/redis.service';
 import { WalletTransaction } from 'src/entity/walletTransaction.entity';
 import { Decimal } from 'decimal.js';
+import { LoanInstallments } from 'src/entity/loanInstallments.entity';
+import { Loan } from 'src/entity/loan.entity';
 
 @Injectable()
 export class UsersService {
@@ -16,9 +18,11 @@ export class UsersService {
     constructor (
 
         @InjectRepository(User) private readonly userRepo: Repository<User>,
+        @InjectRepository(Loan) private readonly loanRepo: Repository<Loan>,
         @InjectRepository(Wallet) private readonly walletRepo: Repository<Wallet>,
         @InjectRepository(Documents) private readonly documentsRepo: Repository<Documents>,
         @InjectRepository(WalletTransaction) private readonly walletTransactionRepo: Repository<WalletTransaction>,
+        @InjectRepository(LoanInstallments) private readonly installmentsRepo: Repository<LoanInstallments>,
         private readonly notficationService: NotficationsService,
         private readonly redisService: RedisService
 
@@ -101,6 +105,17 @@ export class UsersService {
         await this.walletRepo.save(wallet);
         await this.notficationService.notficationForUser(user.id, "First Deposit", `The first deposit has been made and 10000 toman were added to your wallet`);
         return { message: "The deposit to your account was successfull" }
+
+    }
+
+    async getMyLoanDetails (request: Request) {
+
+        const userId = request["user"].id;
+
+        const loans = await this.loanRepo.find({ where: { userId }, select: { monthlyPayment: true, interestRate: true, months: true, primaryAmount: true, reason: true, status: true } });
+        if (loans.length === 0 || !loans) throw new NotFoundException("Loan Not Found");
+
+        return { loans }
 
     }
 
