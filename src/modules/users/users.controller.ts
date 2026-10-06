@@ -109,6 +109,7 @@ export class UsersController {
 
   }
 
+  @ApiOperation({ summary: "Get My Loan Details", description: "With this endpoint user can get its loan details" })
   @KycOnly()
   @Get("my-loan-details")
   async getMyLoanDetails (@Req() request: Request) {
