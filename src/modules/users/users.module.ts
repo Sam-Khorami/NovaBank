@@ -9,10 +9,12 @@ import { NotficationsModule } from '../notfications/notfications.module';
 import { Wallet } from 'src/entity/wallet.entity';
 import { WalletTransaction } from 'src/entity/walletTransaction.entity';
 import { RedisModule } from '../redis/redis.module';
+import { Loan } from 'src/entity/loan.entity';
+import { LoanInstallments } from 'src/entity/loanInstallments.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Documents, Wallet, WalletTransaction]),
+    TypeOrmModule.forFeature([User, Documents, Wallet, WalletTransaction, Loan, LoanInstallments]),
     AdminModule,
     NotficationsModule,
     RedisModule
