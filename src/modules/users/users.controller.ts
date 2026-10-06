@@ -119,6 +119,7 @@ export class UsersController {
 
   }
 
+  @ApiOperation({ summary: "Get My Loan Installments Details", description: "With this endpoint user can get its loan installments details" })
   @KycOnly()
   @Get("my-installments/:loanId")
   async getMyInstallments (@Req() request: Request, @Param("loanId", ParseUUIDPipe) loanId: string, @Query() query: GetInstallmentsQueryDto) {
