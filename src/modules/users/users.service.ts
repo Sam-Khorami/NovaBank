@@ -1,9 +1,9 @@
 import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { KycStatusEnum } from 'src/common/types/entities.enum';
+import { KycStatusEnum, LoanStatusEnum } from 'src/common/types/entities.enum';
 import { Documents } from 'src/entity/documents.entity';
 import { User } from 'src/entity/users.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { NotficationsService } from '../notfications/notfications.service';
 import { Wallet } from 'src/entity/wallet.entity';
 import { RedisService } from '../redis/redis.service';
@@ -11,6 +11,7 @@ import { WalletTransaction } from 'src/entity/walletTransaction.entity';
 import { Decimal } from 'decimal.js';
 import { LoanInstallments } from 'src/entity/loanInstallments.entity';
 import { Loan } from 'src/entity/loan.entity';
+import { GetInstallmentsQueryDto } from './dto/getInstallment.dto';
 
 @Injectable()
 export class UsersService {
@@ -112,10 +113,29 @@ export class UsersService {
 
         const userId = request["user"].id;
 
-        const loans = await this.loanRepo.find({ where: { userId }, select: { monthlyPayment: true, interestRate: true, months: true, primaryAmount: true, reason: true, status: true } });
+        const loans = await this.loanRepo.find({ where: { userId }, select: { id: true, monthlyPayment: true, interestRate: true, months: true, primaryAmount: true, reason: true, status: true } });
         if (loans.length === 0 || !loans) throw new NotFoundException("Loan Not Found");
 
         return { loans }
+
+    }
+
+    async getMyInstallments (request: Request, loanId: string, query: GetInstallmentsQueryDto) {
+
+        const userId = request["user"].id;
+        
+        const loan = await this.loanRepo.findOne({ where: { id: loanId, userId } });
+        if (!loan) throw new NotFoundException("Loan Not Found!");
+        if (loan.status !== LoanStatusEnum.ACTIVE && loan.status !== LoanStatusEnum.APPROVED && loan.status !== LoanStatusEnum.COMPLETED) throw new BadRequestException("The Loan is under review or already rejected");
+
+        const offset = (query.page - 1) * query.limit;
+        const where: FindOptionsWhere<LoanInstallments> = {};
+
+        if (query.status) where.status = query.status;
+        where.loanId = loanId;
+
+        const [statuses, total] = await this.installmentsRepo.findAndCount({ where, skip: offset, take: query.limit, order: { id: "ASC" } });
+        return { data: statuses , pagination: { page: query.page, limit: query.limit, total } }
 
     }
 
