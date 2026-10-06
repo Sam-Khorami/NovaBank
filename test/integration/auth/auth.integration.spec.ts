@@ -198,6 +198,12 @@ describe ("Auth Service", () => {
 
         })
 
+        it("Should return user not found", async () => {
+
+            await expect(authService.login(falseLoginDto)).rejects.toThrow("The user with this information not found!");
+
+        })
+
     })
 
 });
