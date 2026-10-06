@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Param, ParseUUIDPipe, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
@@ -9,6 +9,7 @@ import { diskStorage } from "multer";
 import { extname } from "path";
 import { KycGuard } from 'src/common/guards/kyc.guard';
 import { KycOnly } from 'src/common/decorators/kyc.decorator';
+import { GetInstallmentsQueryDto } from './dto/getInstallment.dto';
 
 @ApiTags("Users Managment")
 @UseGuards(JwtAuthGuard, PermissionGuard, KycGuard)
@@ -115,6 +116,14 @@ export class UsersController {
   async getMyLoanDetails (@Req() request: Request) {
 
     return await this.usersService.getMyLoanDetails(request);
+
+  }
+
+  @KycOnly()
+  @Get("my-installments/:loanId")
+  async getMyInstallments (@Req() request: Request, @Param("loanId", ParseUUIDPipe) loanId: string, @Query() query: GetInstallmentsQueryDto) {
+
+    return await this.usersService.getMyInstallments(request, loanId, query);
 
   }
 
