@@ -139,4 +139,15 @@ export class UsersService {
 
     }
 
+    async getMyProfileDetails (request: Request) {
+
+        const userId = request["user"].id;
+
+        const user = await this.userRepo.findOne({ where: { id: userId }, select: { firstName: true, lastName: true, email: true, phoneNumber: true, nationalCode: true, role: true } });
+        if (!user) throw new NotFoundException("User Not Found!");
+
+        return { user }
+
+    }
+
 }
