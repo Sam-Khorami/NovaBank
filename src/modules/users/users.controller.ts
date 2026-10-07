@@ -128,5 +128,11 @@ export class UsersController {
 
   }
 
+  @Get("my-profile-details")
+  async getMyProfileDetails (@Req() request: Request) {
+
+    return await this.usersService.getMyProfileDetails(request);
+
+  }
 
 }
