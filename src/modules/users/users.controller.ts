@@ -128,6 +128,7 @@ export class UsersController {
 
   }
 
+  @ApiOperation({ summary: "Get Account Profile", description: "With this api user can get its profile details" })
   @Get("my-profile-details")
   async getMyProfileDetails (@Req() request: Request) {
 
