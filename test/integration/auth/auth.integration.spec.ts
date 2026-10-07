@@ -35,9 +35,9 @@ const mockNotficationsService = {
 
 const mockRedisService = {
     setOtp: jest.fn<any>(),
-    getOtp: jest.fn<any>(),
-    deleteOtp: jest.fn<any>(),
-};
+    get: jest.fn<any>(),
+    delete: jest.fn<any>(),
+} as any;
 
 const mockMailService = {
     sendOtp: jest.fn<any>(),
@@ -225,6 +225,29 @@ describe ("Auth Service", () => {
             await expect(authService.login(wrongPasswordLoginDto)).rejects.toThrow("The user with this information not found!");
 
         })
+
+    })
+
+    describe("Otp Verification", () => {
+
+        const otpVerificationDto = {
+            phoneNumber: "09025244094",
+            otp: "123456"
+        }
+
+        it("Should verify otp for logging in", async () => {
+
+            const user = await userRepository.findOne({ where: { phoneNumber: otpVerificationDto.phoneNumber } });
+            expect(user).toBeDefined();
+
+            mockRedisService.get.mockResolvedValue(otpVerificationDto.otp);
+            const response = { cookie: jest.fn() } as any;
+
+            const result = await authService.otpVerification(otpVerificationDto, response);
+            expect(result).toEqual({ message: "Welcome, You are login now", accessToken: expect.any(String) });
+
+        })
+
 
     })
 
