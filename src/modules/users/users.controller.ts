@@ -136,6 +136,7 @@ export class UsersController {
 
   }
 
+  @KycOnly()
   @Get("my-virtual-card/:virtualCardId")
   async getMyVirtualCards (@Param("virtualCardId", ParseUUIDPipe) virtualCardId: string, @Req() request: Request) {
 
