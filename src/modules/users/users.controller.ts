@@ -136,6 +136,7 @@ export class UsersController {
 
   }
 
+  @ApiOperation({ summary: "Get Virtual Card Information", description: "With this api user can get its virtual card information" })
   @KycOnly()
   @Get("my-virtual-card/:virtualCardId")
   async getMyVirtualCards (@Param("virtualCardId", ParseUUIDPipe) virtualCardId: string, @Req() request: Request) {
