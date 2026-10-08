@@ -13,6 +13,7 @@ import { LoanInstallments } from 'src/entity/loanInstallments.entity';
 import { Loan } from 'src/entity/loan.entity';
 import { GetInstallmentsQueryDto } from './dto/getInstallment.dto';
 import { VirtualCard } from 'src/entity/virtualCard.entity';
+import bcrypt from "bcrypt";
 
 @Injectable()
 export class UsersService {
@@ -149,6 +150,22 @@ export class UsersService {
         if (!user) throw new NotFoundException("User Not Found!");
 
         return { user }
+
+    }
+
+    async getMyVirtualCards (virtualCardId: string, request: Request) {
+
+        const userId = request["user"].id;
+        const user = await this.userRepo.findOne({ where: { id: userId } });
+        if (!user) throw new NotFoundException("The user not found!");
+
+        const wallet = await this.walletRepo.findOne({ where: { userId } });
+        if (!wallet) throw new NotFoundException("The wallet not found!");        
+
+        const virtualCard = await this.virtualCardRepo.findOne({ where: { id: virtualCardId, walletId: wallet.id }, select: { lable: true, last4Digits: true, expiryDate: true, spendingLimit: true, spendingAmount: true, cardType: true, status: true } });
+        if (!virtualCard) throw new NotFoundException("The virtual card not found!");
+
+        return { virtualCard }
 
     }
 
