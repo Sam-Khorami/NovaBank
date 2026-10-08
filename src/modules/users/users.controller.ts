@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Get, Param, ParseUUIDPipe, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, Param, ParseUUIDPipe, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/common/guards/jwtAuth.guard';
@@ -133,6 +133,13 @@ export class UsersController {
   async getMyProfileDetails (@Req() request: Request) {
 
     return await this.usersService.getMyProfileDetails(request);
+
+  }
+
+  @Get("my-virtual-card/:virtualCardId")
+  async getMyVirtualCards (@Param("virtualCardId", ParseUUIDPipe) virtualCardId: string, @Req() request: Request) {
+
+    return await this.usersService.getMyVirtualCards(virtualCardId, request);
 
   }
 
