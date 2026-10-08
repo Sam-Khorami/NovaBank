@@ -12,6 +12,7 @@ import { Decimal } from 'decimal.js';
 import { LoanInstallments } from 'src/entity/loanInstallments.entity';
 import { Loan } from 'src/entity/loan.entity';
 import { GetInstallmentsQueryDto } from './dto/getInstallment.dto';
+import { VirtualCard } from 'src/entity/virtualCard.entity';
 
 @Injectable()
 export class UsersService {
@@ -22,6 +23,7 @@ export class UsersService {
         @InjectRepository(Loan) private readonly loanRepo: Repository<Loan>,
         @InjectRepository(Wallet) private readonly walletRepo: Repository<Wallet>,
         @InjectRepository(Documents) private readonly documentsRepo: Repository<Documents>,
+        @InjectRepository(VirtualCard) private readonly virtualCardRepo: Repository<VirtualCard>,
         @InjectRepository(WalletTransaction) private readonly walletTransactionRepo: Repository<WalletTransaction>,
         @InjectRepository(LoanInstallments) private readonly installmentsRepo: Repository<LoanInstallments>,
         private readonly notficationService: NotficationsService,
