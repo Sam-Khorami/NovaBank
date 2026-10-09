@@ -3,6 +3,7 @@ import { Loan } from "./loan.entity";
 import { InstallmentStatusEnum } from "src/common/types/entities.enum";
 
 
+@Index(["dueDate", "status"])
 @Entity("loan_installments")
 export class LoanInstallments {
 
