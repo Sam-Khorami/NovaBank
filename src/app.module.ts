@@ -20,6 +20,7 @@ import { WalletModule } from './modules/wallet/wallet.module';
 import { BullModule } from '@nestjs/bull';
 import { VirtualCardModule } from './modules/virtual_card/virtual_card.module';
 import { LoanModule } from './modules/loan/loan.module';
+import { TasksModule } from './modules/tasks/tasks.module';
 
 @Module({
   imports: [
@@ -61,7 +62,8 @@ import { LoanModule } from './modules/loan/loan.module';
     NotficationsModule,
     WalletModule,
     VirtualCardModule,
-    LoanModule
+    LoanModule,
+    TasksModule
 
   ],
   controllers: [AppController],
