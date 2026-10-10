@@ -233,7 +233,7 @@ describe ("Auth Service", () => {
         const otpVerificationDto = {
             phoneNumber: "09025244094",
             otp: "123456"
-        }
+        };
 
         it("Should verify otp for logging in", async () => {
 
