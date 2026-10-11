@@ -194,12 +194,12 @@ describe ("Auth Service", () => {
         const verifyLoginDto = {
             phoneNumber: "09166234681",
             password: "4061539558Sam@"
-        }
+        };
 
         const wrongPasswordLoginDto = {
             phoneNumber: "09025244094",
             password: "4061539558Sami@"
-        }
+        };
         
         it("Should login the user", async () => {
 
