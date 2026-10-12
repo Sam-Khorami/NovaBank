@@ -189,7 +189,7 @@ describe ("Auth Service", () => {
         const falseLoginDto = {
             phoneNumber: "09168761510",
             password: "4061539558Sam@"
-        }
+        };
 
         const verifyLoginDto = {
             phoneNumber: "09166234681",
