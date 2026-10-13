@@ -184,7 +184,7 @@ describe ("Auth Service", () => {
         const rightLoginDto = {
             phoneNumber: "09025244094",
             password: "4061539558Sam@"
-        }
+        };
 
         const falseLoginDto = {
             phoneNumber: "09168761510",
