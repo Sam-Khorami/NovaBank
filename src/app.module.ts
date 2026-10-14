@@ -21,6 +21,7 @@ import { BullModule } from '@nestjs/bull';
 import { VirtualCardModule } from './modules/virtual_card/virtual_card.module';
 import { LoanModule } from './modules/loan/loan.module';
 import { TasksModule } from './modules/tasks/tasks.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { TasksModule } from './modules/tasks/tasks.module';
 
       })
     }),
+    ScheduleModule.forRoot(),
     IpModule,
     AuthModule,
     LoggerModule,
